@@ -39,19 +39,19 @@ const venta3: Venta = new Venta('VT0003', prod5.precio, cliente2.id, mariela.id)
 export const providersMock: Proveedor[] = [ leFit, canvas, gda, vaqFel, leafCo ];
 export const productsMock: Producto[] = [ prod1, prod2, prod3, prod4, prod5, prod6, prod7 ];
 export const empleados: Empleado[] = [ juan, mariela ];
-export const clientsMock: Cliente[] = [ cliente1, cliente2, cliente3 ];
-export const administrativos: Administrativo[] = [juan, lorenzo];
+export const customersMock: Cliente[] = [ cliente1, cliente2, cliente3 ];
+export const administrative: Administrativo[] = [juan, lorenzo];
 export const sellersMock: Vendedor[] = [mariela, valentino, carlos];
 export const saleMock: Venta[] = [venta1, venta2, venta3];
 
 
 export const prefixObj = {
-  venta: "VT",
-  administrativo: 'A',
+  sale: "VT",
+  administrative: 'A',
   seller: 'V',
   product: 'X',
   dealer: 'P',
-  client: 'C'
-}
+  customer: 'C'
+};
 
 export const totalDigits: number = 4

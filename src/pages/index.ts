@@ -1,10 +1,6 @@
-
-import { Cliente } from "../models/cliente.model.js";
 import { Proveedor } from "../models/proveedor.model.js";
 import { Producto } from "../models/producto.model.js";
-import { Administrativo } from "../models/administrativo.model.js";
-import { Vendedor } from "../models/vendedor.model.js";
-import { providersMock, productsMock, clientsMock, empleados } from '../utils/data.js';
+import { providersMock, productsMock } from '../utils/data.js';
 
 
 

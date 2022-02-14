@@ -30,16 +30,16 @@ const venta3 = new Venta('VT0003', prod5.precio, cliente2.id, mariela.id);
 export const providersMock = [leFit, canvas, gda, vaqFel, leafCo];
 export const productsMock = [prod1, prod2, prod3, prod4, prod5, prod6, prod7];
 export const empleados = [juan, mariela];
-export const clientsMock = [cliente1, cliente2, cliente3];
-export const administrativos = [juan, lorenzo];
+export const customersMock = [cliente1, cliente2, cliente3];
+export const administrative = [juan, lorenzo];
 export const sellersMock = [mariela, valentino, carlos];
 export const saleMock = [venta1, venta2, venta3];
 export const prefixObj = {
-    venta: "VT",
-    administrativo: 'A',
+    sale: "VT",
+    administrative: 'A',
     seller: 'V',
     product: 'X',
     dealer: 'P',
-    client: 'C'
+    customer: 'C'
 };
 export const totalDigits = 4;

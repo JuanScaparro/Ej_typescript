@@ -1,7 +1,7 @@
 import { Venta } from "../models/ventas.model.js";
 import { prefixObj, saleMock, totalDigits } from "../utils/data.js";
 import { getFormData, buildSelectOptions, getNewFullId, getNewIdNumber } from '../utils/utils.js';
-import { sellersMock, clientsMock } from '../utils/data.js';
+import { sellersMock, customersMock } from '../utils/data.js';
 
 
 
@@ -57,12 +57,11 @@ function sendForm( event: any )  {
 function addSale( formData: any ){
 
   const prevId = sales[sales.length-1].id
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.venta)
-  const newFullId = getNewFullId( newIdNumber, prefixObj.venta, totalDigits )
+  const newIdNumber = getNewIdNumber( prevId , prefixObj.sale)
+  const newFullId = getNewFullId( newIdNumber, prefixObj.sale, totalDigits )
 
 
   const newSale = new Venta( newFullId, formData.totalVta, formData.clientsId, formData.sellersId);
-  console.log(formData)
   if( newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '' ){
     alert( 'Complete todos los campos de la venta' );
   }else{
@@ -83,7 +82,7 @@ function init(){
   }else{
     localStorage.setItem( 'sales', JSON.stringify( sales ) );
   }
-  buildSelectOptions(clientsMock, optionClientsSelect)
+  buildSelectOptions(customersMock, optionClientsSelect)
   buildSelectOptions(sellersMock, optionSellersSelect)
   printSales();
 }

@@ -1,12 +1,12 @@
 import { Cliente } from "../models/cliente.model.js";
-import { clientsMock } from '../utils/data.js';
+import { customersMock } from '../utils/data.js';
 import { getFormData } from '../utils/utils.js';
-let clients = [];
+let customers = [];
 const tbodyCli = document.getElementById('tbodyCli');
 const btnFormCli = document.getElementById('btnFormCli');
 btnFormCli.addEventListener('click', sendForm);
 function printClients() {
-    clients.forEach((item) => {
+    customers.forEach((item) => {
         buildTableItem(item);
     });
 }
@@ -40,26 +40,26 @@ function sendForm(event) {
 }
 ;
 function addClient(formData) {
-    const newClient = new Cliente(formData.idCli, formData.nameCli, formData.apeCli, formData.dniCli);
-    if (newClient.id === '' || newClient.nombre === '' || newClient.apellido === '' || newClient.dni === '') {
+    const newCustomer = new Cliente(formData.idCli, formData.nameCli, formData.apeCli, formData.dniCli);
+    if (newCustomer.id === '' || newCustomer.nombre === '' || newCustomer.apellido === '' || newCustomer.dni === '') {
         alert('Complete todos los campos del nuevo cliente');
     }
     else {
-        clients.push(newClient);
-        localStorage.setItem('clients', JSON.stringify(newClient));
-        buildTableItem(newClient);
+        customers.push(newCustomer);
+        localStorage.setItem('clients', JSON.stringify(newCustomer));
+        buildTableItem(newCustomer);
     }
     ;
 }
 ;
 function init() {
-    clients = [...clientsMock];
-    const clientsLS = localStorage.getItem('clients');
-    if (clientsLS) {
-        clients = JSON.parse(clientsLS);
+    customers = [...customersMock];
+    const customersLS = localStorage.getItem('customers');
+    if (customersLS) {
+        customers = JSON.parse(customersLS);
     }
     else {
-        localStorage.setItem('clients', JSON.stringify(clients));
+        localStorage.setItem('customers', JSON.stringify(customers));
     }
     printClients();
 }
