@@ -1,0 +1,90 @@
+import { Venta } from "../models/ventas.model.js";
+import { prefixObj, saleMock, totalDigits } from "../utils/data.js";
+import { getFormData, buildSelectOptions, getNewFullId, getNewIdNumber } from '../utils/utils.js';
+import { sellersMock, clientsMock } from '../utils/data.js';
+
+
+
+let sales: Venta[] = [];
+const tbodySales = document.getElementById( 'tbodySales' ) as HTMLTableElement;
+const btnSubmitForm = document.getElementById( 'btnFormVta' ) as HTMLButtonElement;
+btnSubmitForm.addEventListener( 'click', sendForm );
+const optionClientsSelect = document.getElementById( 'clientsId' ) as HTMLSelectElement;
+const optionSellersSelect = document.getElementById( 'sellersId' ) as HTMLSelectElement;
+
+
+
+function printSales(): void {
+  sales.forEach( ( sale ) => {
+    buildTableItem( sale );
+  } );
+};
+
+function buildTableItem( item:any ){
+  const tr = document.createElement( 'tr' );
+
+  const th = document.createElement( 'th' );
+  th.setAttribute( 'scope', 'row' );
+  const thText = document.createTextNode( item.id );
+  th.appendChild( thText );
+
+  const tdTotSale = document.createElement( 'td' );
+  const tdTotSaleText = document.createTextNode( item.importe );
+  tdTotSale.appendChild( tdTotSaleText );
+
+  const tdCliName = document.createElement( 'td' );
+  const tdCliNameText = document.createTextNode( item.idCliente );
+  tdCliName.appendChild( tdCliNameText );
+
+  const tdName = document.createElement( 'td' );
+  const tdNameText = document.createTextNode( item.idVendedor );
+  tdName.appendChild( tdNameText );
+
+  tr.appendChild( th );
+  tr.appendChild( tdTotSale );
+  tr.appendChild( tdCliName );
+  tr.appendChild( tdName );
+
+  tbodySales.appendChild( tr );
+};
+
+function sendForm( event: any )  {
+  const formData = getFormData( event );
+  addSale( formData );
+};
+
+
+function addSale( formData: any ){
+
+  const prevId = sales[sales.length-1].id
+  const newIdNumber = getNewIdNumber( prevId , prefixObj.venta)
+  const newFullId = getNewFullId( newIdNumber, prefixObj.venta, totalDigits )
+
+
+  const newSale = new Venta( newFullId, formData.totalVta, formData.clientsId, formData.sellersId);
+  console.log(formData)
+  if( newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '' ){
+    alert( 'Complete todos los campos de la venta' );
+  }else{
+    sales.push( newSale );
+    localStorage.setItem( 'sales', JSON.stringify( sales ));
+    buildTableItem( newSale );
+  }
+};
+
+
+function init(){
+
+  sales = [ ...saleMock ];
+  const salesLS = localStorage.getItem( 'sales' );
+
+  if( salesLS ){
+    sales = JSON.parse( salesLS );
+  }else{
+    localStorage.setItem( 'sales', JSON.stringify( sales ) );
+  }
+  buildSelectOptions(clientsMock, optionClientsSelect)
+  buildSelectOptions(sellersMock, optionSellersSelect)
+  printSales();
+}
+init();
