@@ -55,7 +55,7 @@
         <div class="row">
           <div class="col mb-3">
             <label for="c_id" class="form-label input-label">Id Producto</label>
-            <input type="text" id="c_id" class="form-control" placeholder="Ingrese Id de producto" aria-label="Id Producto" required>
+            <p id="c_id"></p>
           </div>
           <div class="col">
             <label for="c_desc" class="form-label input-label">Descripción</label>
@@ -68,9 +68,12 @@
             <input type="text" id="c_price" class="form-control" placeholder="Ingrese precio del producto" aria-label="First name" required>
           </div>
           <div class="col mb-3">
-            <label for="c_idProv" class="form-label input-label">Id Proveedor</label>
-            <input type="text" id="c_idProv" class="form-control" placeholder="Ingrese Id del proveedor" aria-label="Proveedor" required>
+            <label for="c_idProv" class="form-label input-label">Seleccione Id Proveedor</label>
+            <select type="text" id="c_idProv" class="form-select" aria-label="Default select example">
+              <option value="" selected>Seleccione...</option>
+            </select>
           </div>
+
         </div>
 
         <button id="btnFormProd" type="submit" class="btn btn-primary">Ingresar</button>

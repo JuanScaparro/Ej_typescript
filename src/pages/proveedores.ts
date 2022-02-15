@@ -1,6 +1,6 @@
 import { Proveedor } from "../models/proveedor.model.js";
-import { providersMock } from '../utils/data.js';
-import { getFormData } from '../utils/utils.js';
+import { providersMock, prefixObj, totalDigits } from '../utils/data.js';
+import { getFormData, getNewIdNumber, getNewFullId } from '../utils/utils.js';
 
 
 let providers: Proveedor[] = [];
@@ -9,9 +9,8 @@ const btmFormProv = document.getElementById( 'btnFormProv' ) as HTMLElement;
 btmFormProv.addEventListener( 'click', sendForm );
 
 function printProvider(): void {
-  providers.forEach( item => {
-    builtTableItem( item );
-  } );  
+  console.log(providers)
+  providers.forEach( item => { builtTableItem( item ) } );  
 };
 
 function builtTableItem( item: any ) {
@@ -50,12 +49,17 @@ function sendForm( event: any ) {
 };
 
 function addProvider( formData: any ) {
-  const newProvider = new Proveedor( formData.idProv, formData.nameProv, formData.apeProv, formData.dniProv );
+
+  const prevId = providers[ providers.length - 1 ].id;
+  const newIdNumber = getNewIdNumber( prevId , prefixObj.dealer );
+  const newFullId = getNewFullId( newIdNumber, prefixObj.dealer, totalDigits );
+
+  const newProvider = new Proveedor( newFullId, formData.nameProv, formData.apeProv, formData.dniProv );
   if( newProvider.id === '' || newProvider.nombre === '' || newProvider.apellido === '' || newProvider.dni === '' ){
     alert( 'Complete todos los campos del nuevo proveedor' );
   }else{
     providers.push( newProvider );
-    localStorage.setItem( 'providers', JSON.stringify( newProvider ) );
+    localStorage.setItem( 'providers', JSON.stringify( providers ) );
     builtTableItem( newProvider );
   };
 };

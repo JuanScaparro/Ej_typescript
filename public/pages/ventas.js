@@ -9,9 +9,8 @@ btnSubmitForm.addEventListener('click', sendForm);
 const optionClientsSelect = document.getElementById('clientsId');
 const optionSellersSelect = document.getElementById('sellersId');
 function printSales() {
-    sales.forEach((sale) => {
-        buildTableItem(sale);
-    });
+    console.log(sales);
+    sales.forEach((sale) => { buildTableItem(sale); });
 }
 ;
 function buildTableItem(item) {

@@ -1,12 +1,13 @@
 import { Producto } from "../models/producto.model.js";
-import { productsMock } from '../utils/data.js';
-import { getFormData } from '../utils/utils.js';
+import { productsMock, providersMock, prefixObj, totalDigits } from '../utils/data.js';
+import { getFormData, buildSelectOptions, getNewIdNumber, getNewFullId } from '../utils/utils.js';
 import { getDiscount } from '../utils/utils.js';
 import { getDiscountPercent } from '../utils/utils.js';
 let products = [];
 const tbodyProd = document.getElementById("tbodyProd");
 const btnSubmitForm = document.getElementById("btnFormProd");
 btnSubmitForm.addEventListener('click', sendForm);
+const optionProductSelect = document.getElementById('c_idProv');
 // IMPRIME DINAMICAMENTE EL HTML 
 function printproducts() {
     products.forEach((prod) => {
@@ -58,7 +59,10 @@ function sendForm(event) {
 }
 // genera una nueva instacia de producto
 function addProduct(formData) {
-    const newProd = new Producto(formData.c_id, formData.c_desc, Number(formData.c_price), formData.c_idProv);
+    const prevId = products[products.length - 1].id;
+    const newIdNumber = getNewIdNumber(prevId, prefixObj.product);
+    const newFullId = getNewFullId(newIdNumber, prefixObj.product, totalDigits);
+    const newProd = new Producto(newFullId, formData.c_desc, Number(formData.c_price), formData.c_idProv);
     if (newProd.id === '' || newProd.descripcion === '' || newProd.precio === 0 || newProd.idProveedor === '') {
         alert('Complete todos los campos');
     }
@@ -78,6 +82,7 @@ function init() {
     else {
         localStorage.setItem("products", JSON.stringify(products));
     }
+    buildSelectOptions(providersMock, optionProductSelect);
     printproducts();
 }
 init();

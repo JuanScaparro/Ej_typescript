@@ -15,9 +15,8 @@ const optionSellersSelect = document.getElementById( 'sellersId' ) as HTMLSelect
 
 
 function printSales(): void {
-  sales.forEach( ( sale ) => {
-    buildTableItem( sale );
-  } );
+  console.log(sales)
+  sales.forEach( ( sale ) => { buildTableItem( sale ) } );
 };
 
 function buildTableItem( item:any ){
@@ -56,12 +55,12 @@ function sendForm( event: any )  {
 
 function addSale( formData: any ){
 
-  const prevId = sales[sales.length-1].id
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.sale)
-  const newFullId = getNewFullId( newIdNumber, prefixObj.sale, totalDigits )
+  const prevId = sales[sales.length-1].id;
+  const newIdNumber = getNewIdNumber( prevId , prefixObj.sale );
+  const newFullId = getNewFullId( newIdNumber, prefixObj.sale, totalDigits );
 
 
-  const newSale = new Venta( newFullId, formData.totalVta, formData.clientsId, formData.sellersId);
+  const newSale = new Venta( newFullId, formData.totalVta, formData.clientsId, formData.sellersId );
   if( newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '' ){
     alert( 'Complete todos los campos de la venta' );
   }else{
@@ -82,8 +81,8 @@ function init(){
   }else{
     localStorage.setItem( 'sales', JSON.stringify( sales ) );
   }
-  buildSelectOptions(customersMock, optionClientsSelect)
-  buildSelectOptions(sellersMock, optionSellersSelect)
+  buildSelectOptions( customersMock, optionClientsSelect );
+  buildSelectOptions( sellersMock, optionSellersSelect );
   printSales();
 }
 init();
