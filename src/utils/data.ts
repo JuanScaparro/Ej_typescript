@@ -21,11 +21,11 @@ const prod5: Producto = new Producto('X0005', 'Pollo vegetal', 430.1,'P0005');
 const prod6: Producto = new Producto('X0006', 'Carne vegetal', 150,'P0005');
 const prod7: Producto = new Producto('X0007', 'Pepas de membrillo', 69.5,'P0003');
 
-const juan: Administrativo = new Administrativo('Juan', 'Scap', '123456798', 'A0001');
-const lorenzo: Administrativo = new Administrativo('Lorenzo', 'Scap', '614325675', 'A0002');
-const mariela: Vendedor = new Vendedor('Mariela', 'Scap', '9876543213', 'V0001');
-const valentino: Vendedor = new Vendedor('Valentino', 'Scaparro', '6787544453', 'V0002');
-const carlos: Vendedor = new Vendedor('Carlos', 'Carlitos', '34212344', 'V0003');
+const juan: Administrativo = new Administrativo('A0001', 'Juan', 'Scap', '123456798');
+const lorenzo: Administrativo = new Administrativo('A0002', 'Lorenzo', 'Scap', '614325675');
+const mariela: Vendedor = new Vendedor('V0001', 'Mariela', 'Scap', '9876543213');
+const valentino: Vendedor = new Vendedor( 'V0002', 'Valentino', 'Scaparro', '6787544453');
+const carlos: Vendedor = new Vendedor('V0003', 'Carlos', 'Carlitos', '34212344');
 
 const cliente1: Cliente = new Cliente('C0001', 'Carlos', 'Esperanza', '23456789');
 const cliente2: Cliente = new Cliente('C0002', 'Ernesto', 'Gonzalez', '54367889');
@@ -40,7 +40,7 @@ export const providersMock: Proveedor[] = [ leFit, canvas, gda, vaqFel, leafCo ]
 export const productsMock: Producto[] = [ prod1, prod2, prod3, prod4, prod5, prod6, prod7 ];
 export const empleados: Empleado[] = [ juan, mariela ];
 export const customersMock: Cliente[] = [ cliente1, cliente2, cliente3 ];
-export const administrative: Administrativo[] = [juan, lorenzo];
+export const administrativeMock: Administrativo[] = [juan, lorenzo];
 export const sellersMock: Vendedor[] = [mariela, valentino, carlos];
 export const saleMock: Venta[] = [venta1, venta2, venta3];
 

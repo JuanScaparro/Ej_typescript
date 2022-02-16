@@ -33,10 +33,10 @@ function buildTableItem(item) {
 }
 function sendForm(event) {
     const formData = getFormData(event);
-    addClient(formData);
+    addCustomer(formData);
 }
 ;
-function addClient(formData) {
+function addCustomer(formData) {
     const prevId = customers[customers.length - 1].id;
     const newIdNumber = getNewIdNumber(prevId, prefixObj.customer);
     const newFullId = getNewFullId(newIdNumber, prefixObj.customer, totalDigits);

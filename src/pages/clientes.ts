@@ -49,10 +49,10 @@ function buildTableItem( item: any ){
 
 function sendForm( event: any ) {
   const formData = getFormData( event );
-  addClient( formData );
+  addCustomer( formData );
 };
 
-function addClient( formData: any ) {
+function addCustomer( formData: any ) {
 
   const prevId = customers[ customers.length - 1 ].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.customer );

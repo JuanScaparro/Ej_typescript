@@ -1,7 +1,7 @@
 import { Empleado } from "./empleado.model.js";
 export class Administrativo extends Empleado {
-    constructor(_nombre, _apellido, _dni, _id) {
-        super(_nombre, _apellido, _dni, _id);
+    constructor(_id, _nombre, _apellido, _dni) {
+        super(_id, _nombre, _apellido, _dni);
     }
     facturar(mes) {
         console.log("Estoy facturando el mes de " + mes);
