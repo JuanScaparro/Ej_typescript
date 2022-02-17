@@ -6,6 +6,7 @@ let customers: Cliente[] = [];
 const tbodyCli = document.getElementById( 'tbodyCli' ) as HTMLElement;
 const btnFormCli = document.getElementById( 'btnFormCli' ) as HTMLElement;
 btnFormCli.addEventListener( 'click', sendForm );
+const idCli = document.getElementById( 'idCli' ) as HTMLFormElement;
 
 
 function printCustomers(): void {
@@ -50,15 +51,35 @@ function buildTableItem( item: any ){
 function sendForm( event: any ) {
   const formData = getFormData( event );
   addCustomer( formData );
+  printId()
 };
 
-function addCustomer( formData: any ) {
-
+function nextId(): string {
+  
   const prevId = customers[ customers.length - 1 ].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.customer );
   const newFullId = getNewFullId( newIdNumber, prefixObj.customer, totalDigits );
 
-  const newCustomer = new Cliente( newFullId, formData.nameCli, formData.apeCli, formData.dniCli );
+  return newFullId;
+
+};
+
+function printId() {
+  const isH2: boolean = idCli.hasChildNodes();
+
+  if( isH2 ) {
+    idCli.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+  }else {
+    const nodoH2 = document.createElement( 'h2' );
+    const h2Text = document.createTextNode( nextId() );
+    nodoH2.appendChild( h2Text );
+    idCli.appendChild( nodoH2 );
+  }
+}
+
+function addCustomer( formData: any ) {
+
+  const newCustomer = new Cliente( nextId(), formData.nameCli, formData.apeCli, formData.dniCli );
   if( newCustomer.id === '' || newCustomer.nombre === '' || newCustomer.apellido === '' || newCustomer.dni === '' ){
     alert( 'Complete todos los campos del nuevo cliente' );
   }else{
@@ -78,5 +99,6 @@ function init() {
     localStorage.setItem( 'customers', JSON.stringify( customers ) );
   }
   printCustomers();
+  printId();
 }
 init();

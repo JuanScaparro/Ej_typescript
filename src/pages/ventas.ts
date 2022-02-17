@@ -11,12 +11,14 @@ const btnSubmitForm = document.getElementById( 'btnFormVta' ) as HTMLButtonEleme
 btnSubmitForm.addEventListener( 'click', sendForm );
 const optionClientsSelect = document.getElementById( 'clientsId' ) as HTMLSelectElement;
 const optionSellersSelect = document.getElementById( 'sellersId' ) as HTMLSelectElement;
+const idVta = document.getElementById( 'idVta' ) as HTMLFormElement;
 
 
 
 function printSales(): void {
-  console.log(sales)
+
   sales.forEach( ( sale ) => { buildTableItem( sale ) } );
+
 };
 
 function buildTableItem( item:any ){
@@ -50,17 +52,35 @@ function buildTableItem( item:any ){
 function sendForm( event: any )  {
   const formData = getFormData( event );
   addSale( formData );
+  printId();
 };
 
-
-function addSale( formData: any ){
-
+function nextId(): string {
+  
   const prevId = sales[sales.length-1].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.sale );
   const newFullId = getNewFullId( newIdNumber, prefixObj.sale, totalDigits );
 
+  return newFullId;
 
-  const newSale = new Venta( newFullId, formData.totalVta, formData.clientsId, formData.sellersId );
+};
+
+function printId() {
+  const isH2: boolean = idVta.hasChildNodes();
+
+  if( isH2 ) {
+    idVta.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+  }else {
+    const nodoH2 = document.createElement( 'h2' );
+    const h2Text = document.createTextNode( nextId() );
+    nodoH2.appendChild( h2Text );
+    idVta.appendChild( nodoH2 );
+  }
+};
+
+function addSale( formData: any ){
+
+  const newSale = new Venta( nextId(), formData.totalVta, formData.clientsId, formData.sellersId );
   if( newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '' ){
     alert( 'Complete todos los campos de la venta' );
   }else{
@@ -84,5 +104,7 @@ function init(){
   buildSelectOptions( customersMock, optionClientsSelect );
   buildSelectOptions( sellersMock, optionSellersSelect );
   printSales();
-}
+  printId();
+  
+};
 init();

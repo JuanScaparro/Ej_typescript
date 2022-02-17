@@ -63,19 +63,10 @@ function nextId(): string {
 
 function printId() {
 
-  // const isH2: boolean = idSeller!.hasChildNodes()
-  // if(isH2){
-  //   idSeller.childNodes.item(0).remove()
-  // }
-  // const nodoH2 = document.createElement( 'h2' )
-  // nodoH2.setAttribute('id', 'idH2')
-  // const h2Text = document.createTextNode( nextId() );
-  // nodoH2.appendChild( h2Text );
-  // idSeller.appendChild( nodoH2 );
-
-  const isH2: boolean = idSeller!.hasChildNodes()
-  if(isH2){
-    idSeller.getElementsByTagName('h2')[0].innerHTML = nextId()
+  const isH2: boolean = idSeller!.hasChildNodes();
+  
+  if( isH2 ){
+    idSeller.getElementsByTagName( 'h2' )[0].innerHTML = nextId()
   }else{
     const nodoH2 = document.createElement( 'h2' )
     const h2Text = document.createTextNode( nextId() );

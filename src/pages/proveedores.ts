@@ -7,9 +7,10 @@ let providers: Proveedor[] = [];
 const tbodyProv = document.getElementById( 'tbodyProv' ) as HTMLElement;
 const btmFormProv = document.getElementById( 'btnFormProv' ) as HTMLElement;
 btmFormProv.addEventListener( 'click', sendForm );
+const idProv = document.getElementById( 'idProv' ) as HTMLFormElement;
 
 function printProvider(): void {
-  console.log(providers)
+
   providers.forEach( item => { builtTableItem( item ) } );  
 };
 
@@ -44,17 +45,38 @@ function builtTableItem( item: any ) {
 
 function sendForm( event: any ) {
   const formData = getFormData( event );
-  console.log( formData );
   addProvider( formData );
+  printId();
 };
 
-function addProvider( formData: any ) {
+function nextId(): string {
 
   const prevId = providers[ providers.length - 1 ].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.dealer );
   const newFullId = getNewFullId( newIdNumber, prefixObj.dealer, totalDigits );
 
-  const newProvider = new Proveedor( newFullId, formData.nameProv, formData.apeProv, formData.dniProv );
+  return newFullId
+
+};
+
+function printId() {
+
+  const isH2: boolean = idProv.hasChildNodes();
+
+  if( isH2 ) {
+    idProv.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+  }else {
+    const nodoH2 = document.createElement( 'h2' );
+    const h2Text = document.createTextNode( nextId() );
+    nodoH2.appendChild( h2Text );
+    idProv.appendChild( nodoH2 );
+  }
+
+};
+
+function addProvider( formData: any ) {
+
+  const newProvider = new Proveedor( nextId(), formData.nameProv, formData.apeProv, formData.dniProv );
   if( newProvider.id === '' || newProvider.nombre === '' || newProvider.apellido === '' || newProvider.dni === '' ){
     alert( 'Complete todos los campos del nuevo proveedor' );
   }else{
@@ -74,5 +96,6 @@ function init() {
     localStorage.setItem( 'providers', JSON.stringify( providers ) );
   }
   printProvider();
+  printId();
 }
 init();

@@ -8,8 +8,8 @@ const btnSubmitForm = document.getElementById('btnFormVta');
 btnSubmitForm.addEventListener('click', sendForm);
 const optionClientsSelect = document.getElementById('clientsId');
 const optionSellersSelect = document.getElementById('sellersId');
+const idVta = document.getElementById('idVta');
 function printSales() {
-    console.log(sales);
     sales.forEach((sale) => { buildTableItem(sale); });
 }
 ;
@@ -38,13 +38,31 @@ function buildTableItem(item) {
 function sendForm(event) {
     const formData = getFormData(event);
     addSale(formData);
+    printId();
 }
 ;
-function addSale(formData) {
+function nextId() {
     const prevId = sales[sales.length - 1].id;
     const newIdNumber = getNewIdNumber(prevId, prefixObj.sale);
     const newFullId = getNewFullId(newIdNumber, prefixObj.sale, totalDigits);
-    const newSale = new Venta(newFullId, formData.totalVta, formData.clientsId, formData.sellersId);
+    return newFullId;
+}
+;
+function printId() {
+    const isH2 = idVta.hasChildNodes();
+    if (isH2) {
+        idVta.getElementsByTagName('h2')[0].innerHTML = nextId();
+    }
+    else {
+        const nodoH2 = document.createElement('h2');
+        const h2Text = document.createTextNode(nextId());
+        nodoH2.appendChild(h2Text);
+        idVta.appendChild(nodoH2);
+    }
+}
+;
+function addSale(formData) {
+    const newSale = new Venta(nextId(), formData.totalVta, formData.clientsId, formData.sellersId);
     if (newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '') {
         alert('Complete todos los campos de la venta');
     }
@@ -67,5 +85,7 @@ function init() {
     buildSelectOptions(customersMock, optionClientsSelect);
     buildSelectOptions(sellersMock, optionSellersSelect);
     printSales();
+    printId();
 }
+;
 init();

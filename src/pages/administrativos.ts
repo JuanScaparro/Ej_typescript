@@ -8,6 +8,7 @@ let administratives: Administrativo[] = [];
 const tbodyAdm = document.getElementById("tbodyAdm") as HTMLElement;
 const btnFormAdm = document.getElementById( 'btnFormAdm' ) as HTMLButtonElement;
 btnFormAdm.addEventListener( 'click', sendForm );
+const idAdm = document.getElementById( 'idAdm' ) as HTMLFormElement;
 
 function printAdministratives(): void {
 
@@ -47,15 +48,37 @@ function buildTableItem( item: any ){
 function sendForm( event: any ) {
   const formData = getFormData( event );
   addAdmin( formData );
+  printId();
 }
 
-function addAdmin( formData: any ) {
+function nextId(): string {
 
   const prevId = administratives[ administratives.length - 1 ].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.administrative );
   const newFullId = getNewFullId( newIdNumber, prefixObj.administrative, totalDigits );
 
-  const newAdministrative = new Administrativo( newFullId, formData.nameAdm, formData.apeAdm, formData.dniAdm );
+  return newFullId;
+
+};
+
+function printId() {
+
+  const isH2: boolean = idAdm.hasChildNodes();
+
+  if( isH2 ) {
+    idAdm.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+  }else {
+    const nodoH2 = document.createElement( 'h2' );
+    const h2Text = document.createTextNode( nextId() );
+    nodoH2.appendChild( h2Text );
+    idAdm.appendChild( nodoH2 );
+  }
+
+};
+
+function addAdmin( formData: any ) {
+
+  const newAdministrative = new Administrativo( nextId(), formData.nameAdm, formData.apeAdm, formData.dniAdm );
   if( newAdministrative.id === '' || newAdministrative.nombre === '' || newAdministrative.apellido === '' || newAdministrative.dni === '' ){
     alert( 'Complete todos los campos del nuevo Administrativo' );
   }else{
@@ -75,5 +98,6 @@ function init() {
     localStorage.setItem( 'administratives', JSON.stringify( administratives ) );
   }
   printAdministratives();
+  printId();
 }
 init();

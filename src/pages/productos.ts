@@ -10,67 +10,85 @@ const tbodyProd: HTMLElement = <HTMLElement>document.getElementById("tbodyProd")
 const btnSubmitForm: HTMLElement = <HTMLElement>document.getElementById("btnFormProd")
 btnSubmitForm.addEventListener('click', sendForm);
 const optionProductSelect = document.getElementById( 'c_idProv' ) as HTMLSelectElement;
+const idProd = document.getElementById( 'c_id' ) as HTMLFormElement;
 
-// IMPRIME DINAMICAMENTE EL HTML 
 function printproducts(): void {
   products.forEach( (prod) => {
     buildTableItem(prod)
   } )
 }
 
-// GENERA LA TABLA
 function buildTableItem( item:any){
-  const fila = document.createElement("tr"); // <tr>
-  //
-  const th = document.createElement("th");//<th scope="row" id="id">1</th>
+  const fila = document.createElement("tr");
+
+  const th = document.createElement("th");
   th.setAttribute("scope", "row")
   const thText = document.createTextNode( item.id )
   th.appendChild(thText)
-  //
-  const tdDesc = document.createElement("td")// <td id="desc">Mark</td>
+
+  const tdDesc = document.createElement("td")
   const tdDescText = document.createTextNode( item.descripcion )
   tdDesc.appendChild( tdDescText );
-  //
-  const tdPrecio = document.createElement('td'); // <td id="precio">Otto</td>
+
+  const tdPrecio = document.createElement('td');
   const tdPrecioText = document.createTextNode( item.precio );
   tdPrecio.appendChild( tdPrecioText );
-  //
-  const tdPrecioDescuento = document.createElement('td'); // <td id="precio">Otto</td>
+
+  const tdPrecioDescuento = document.createElement('td');
   const tdPrecioDescuentoText = document.createTextNode( getDiscount(item.precio).toString() );
   tdPrecioDescuento.appendChild( tdPrecioDescuentoText );
-  //
-  const tdDescuento = document.createElement('td'); // <td id="precio">Otto</td>
+
+  const tdDescuento = document.createElement('td');
   const tdDescuentoText = document.createTextNode( getDiscountPercent(item.precio).toString() );
   tdDescuento.appendChild( tdDescuentoText );
-  //
-  const tdName = document.createElement('td'); // <td id="name">@mdo</td>
-  const tdNameText = document.createTextNode( item.idProveedor ) //getNombreProveedor(prod.idProveedor)
+
+  const tdName = document.createElement('td');
+  const tdNameText = document.createTextNode( item.idProveedor ) 
   tdName.appendChild( tdNameText );
-  //
+
   fila.appendChild(th);
   fila.appendChild(tdDesc);
   fila.appendChild(tdPrecio);
   fila.appendChild(tdPrecioDescuento);
   fila.appendChild(tdDescuento);
   fila.appendChild(tdName);
-  //
+
   tbodyProd.appendChild(fila);
 }
 
-// Recupera todos los valores de los campos de input de un formulario
 function sendForm(event: any)  {
   const formData = getFormData(event);
   addProduct(formData);
+  printId();
 }
 
-// genera una nueva instacia de producto
-function addProduct(formData: any){
-
+function nextId(): string {
+  
   const prevId = products[products.length-1].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.product );
   const newFullId = getNewFullId( newIdNumber, prefixObj.product, totalDigits );
 
-  const newProd = new Producto( newFullId, formData.c_desc, Number(formData.c_price), formData.c_idProv );
+  return newFullId;
+
+};
+
+function printId() {
+
+  const isH2: boolean = idProd.hasChildNodes();
+
+  if( isH2 ) {
+    idProd.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+  }else {
+    const nodoH2 = document.createElement( 'h2' );
+    const h2Text = document.createTextNode( nextId() );
+    nodoH2.appendChild( h2Text );
+    idProd.appendChild( nodoH2 );
+  }
+};
+
+function addProduct(formData: any){
+
+  const newProd = new Producto( nextId(), formData.c_desc, Number(formData.c_price), formData.c_idProv );
   if(newProd.id === '' || newProd.descripcion === '' || newProd.precio === 0 || newProd.idProveedor === ''){
     alert('Complete todos los campos');
   }else{
@@ -93,6 +111,7 @@ function init(){
   }
   buildSelectOptions( providersMock, optionProductSelect );
   printproducts();
+  printId();
 }
 
 
