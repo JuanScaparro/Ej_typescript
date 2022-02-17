@@ -5,6 +5,7 @@ let sellers = [];
 const tbodyVend = document.getElementById('tbodyVend');
 const btnFormSeller = document.getElementById('btnFormSeller');
 btnFormSeller.addEventListener('click', sendForm);
+const idSeller = document.getElementById('idSeller');
 function printSaller() {
     sellers.forEach(item => { buildTableItem(item); });
 }
@@ -34,13 +35,40 @@ function buildTableItem(item) {
 function sendForm(event) {
     const sendForm = getFormData(event);
     addSeller(sendForm);
+    printId();
 }
 ;
-function addSeller(formData) {
+function nextId() {
     const prevId = sellers[sellers.length - 1].id;
     const newIdNumber = getNewIdNumber(prevId, prefixObj.seller);
     const newFullId = getNewFullId(newIdNumber, prefixObj.seller, totalDigits);
-    const newSeller = new Vendedor(newFullId, formData.nameSeller, formData.apeSeller, formData.dniSeller);
+    return newFullId;
+}
+;
+function printId() {
+    // const isH2: boolean = idSeller!.hasChildNodes()
+    // if(isH2){
+    //   idSeller.childNodes.item(0).remove()
+    // }
+    // const nodoH2 = document.createElement( 'h2' )
+    // nodoH2.setAttribute('id', 'idH2')
+    // const h2Text = document.createTextNode( nextId() );
+    // nodoH2.appendChild( h2Text );
+    // idSeller.appendChild( nodoH2 );
+    const isH2 = idSeller.hasChildNodes();
+    if (isH2) {
+        idSeller.getElementsByTagName('h2')[0].innerHTML = nextId();
+    }
+    else {
+        const nodoH2 = document.createElement('h2');
+        const h2Text = document.createTextNode(nextId());
+        nodoH2.appendChild(h2Text);
+        idSeller.appendChild(nodoH2);
+    }
+}
+;
+function addSeller(formData) {
+    const newSeller = new Vendedor(nextId(), formData.nameSeller, formData.apeSeller, formData.dniSeller);
     if (newSeller.id === '' || newSeller.nombre === '' || newSeller.apellido === '' || newSeller.dni === '') {
         alert('Complete todos los campos del nuevo Vendedor');
     }
@@ -60,6 +88,7 @@ function init() {
     else {
         localStorage.setItem('sellers', JSON.stringify(sellers));
     }
+    printId();
     printSaller();
 }
 init();

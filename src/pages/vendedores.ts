@@ -8,6 +8,7 @@ let sellers: Vendedor[] = [];
 const tbodyVend = document.getElementById( 'tbodyVend' ) as HTMLElement;
 const btnFormSeller = document.getElementById( 'btnFormSeller' ) as HTMLButtonElement;
 btnFormSeller.addEventListener( 'click', sendForm );
+const idSeller = document.getElementById( 'idSeller' ) as HTMLFormElement
 
 function printSaller(): void {
 
@@ -44,17 +45,49 @@ function buildTableItem( item: any ) {
 };
 
 function sendForm( event: any ) {
+
   const sendForm = getFormData( event );
   addSeller( sendForm );
+  printId()
 };
 
-function addSeller( formData: any ) {
+function nextId(): string {
 
   const prevId = sellers[ sellers.length - 1 ].id;
   const newIdNumber = getNewIdNumber( prevId , prefixObj.seller );
   const newFullId = getNewFullId( newIdNumber, prefixObj.seller, totalDigits );
 
-  const newSeller = new Vendedor( newFullId, formData.nameSeller, formData.apeSeller, formData.dniSeller );
+  return newFullId
+
+};
+
+function printId() {
+
+  // const isH2: boolean = idSeller!.hasChildNodes()
+  // if(isH2){
+  //   idSeller.childNodes.item(0).remove()
+  // }
+  // const nodoH2 = document.createElement( 'h2' )
+  // nodoH2.setAttribute('id', 'idH2')
+  // const h2Text = document.createTextNode( nextId() );
+  // nodoH2.appendChild( h2Text );
+  // idSeller.appendChild( nodoH2 );
+
+  const isH2: boolean = idSeller!.hasChildNodes()
+  if(isH2){
+    idSeller.getElementsByTagName('h2')[0].innerHTML = nextId()
+  }else{
+    const nodoH2 = document.createElement( 'h2' )
+    const h2Text = document.createTextNode( nextId() );
+    nodoH2.appendChild( h2Text );
+    idSeller.appendChild( nodoH2 );
+  }
+
+};
+
+function addSeller( formData: any ) {
+  
+  const newSeller = new Vendedor( nextId(), formData.nameSeller, formData.apeSeller, formData.dniSeller );
   if( newSeller.id === '' || newSeller.nombre === '' || newSeller.apellido === '' || newSeller.dni === '' ) {
     alert( 'Complete todos los campos del nuevo Vendedor' );
   } else {
@@ -62,6 +95,7 @@ function addSeller( formData: any ) {
     localStorage.setItem( 'sellers', JSON.stringify( sellers ) );
     buildTableItem( newSeller );
   }
+
 };
 
 function init() {
@@ -73,6 +107,7 @@ function init() {
   }else{
     localStorage.setItem( 'sellers', JSON.stringify( sellers ) );
   }
+  printId()
   printSaller();
 }
 init();
