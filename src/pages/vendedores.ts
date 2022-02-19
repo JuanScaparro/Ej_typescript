@@ -1,6 +1,6 @@
 import { Vendedor } from '../models/vendedor.model.js';
 import { prefixObj, sellersMock, totalDigits } from '../utils/data.js';
-import { getFormData, getNewFullId, getNewIdNumber } from '../utils/utils.js';
+import { getFormData, nextId } from '../utils/utils.js';
 
 
 
@@ -45,20 +45,9 @@ function buildTableItem( item: any ) {
 };
 
 function sendForm( event: any ) {
-
   const sendForm = getFormData( event );
   addSeller( sendForm );
   printId()
-};
-
-function nextId(): string {
-
-  const prevId = sellers[ sellers.length - 1 ].id;
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.seller );
-  const newFullId = getNewFullId( newIdNumber, prefixObj.seller, totalDigits );
-
-  return newFullId
-
 };
 
 function printId() {
@@ -66,10 +55,10 @@ function printId() {
   const isH2: boolean = idSeller!.hasChildNodes();
   
   if( isH2 ){
-    idSeller.getElementsByTagName( 'h2' )[0].innerHTML = nextId()
+    idSeller.getElementsByTagName( 'h2' )[0].innerHTML = nextId(sellers, prefixObj.seller, totalDigits)
   }else{
     const nodoH2 = document.createElement( 'h2' )
-    const h2Text = document.createTextNode( nextId() );
+    const h2Text = document.createTextNode( nextId(sellers, prefixObj.seller, totalDigits) );
     nodoH2.appendChild( h2Text );
     idSeller.appendChild( nodoH2 );
   }
@@ -78,7 +67,7 @@ function printId() {
 
 function addSeller( formData: any ) {
   
-  const newSeller = new Vendedor( nextId(), formData.nameSeller, formData.apeSeller, formData.dniSeller );
+  const newSeller = new Vendedor( nextId(sellers, prefixObj.seller, totalDigits), formData.nameSeller, formData.apeSeller, formData.dniSeller );
   if( newSeller.id === '' || newSeller.nombre === '' || newSeller.apellido === '' || newSeller.dni === '' ) {
     alert( 'Complete todos los campos del nuevo Vendedor' );
   } else {

@@ -1,6 +1,6 @@
 import { Cliente } from "../models/cliente.model.js";
 import { customersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, getNewFullId, getNewIdNumber } from '../utils/utils.js';
+import { getFormData, nextId } from '../utils/utils.js';
 
 let customers: Cliente[] = [];
 const tbodyCli = document.getElementById( 'tbodyCli' ) as HTMLElement;
@@ -54,24 +54,14 @@ function sendForm( event: any ) {
   printId()
 };
 
-function nextId(): string {
-  
-  const prevId = customers[ customers.length - 1 ].id;
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.customer );
-  const newFullId = getNewFullId( newIdNumber, prefixObj.customer, totalDigits );
-
-  return newFullId;
-
-};
-
 function printId() {
   const isH2: boolean = idCli.hasChildNodes();
 
   if( isH2 ) {
-    idCli.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+    idCli.getElementsByTagName( 'h2' )[0].innerHTML = nextId(customers, prefixObj.customer, totalDigits);
   }else {
     const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId() );
+    const h2Text = document.createTextNode( nextId(customers, prefixObj.customer, totalDigits) );
     nodoH2.appendChild( h2Text );
     idCli.appendChild( nodoH2 );
   }
@@ -79,7 +69,7 @@ function printId() {
 
 function addCustomer( formData: any ) {
 
-  const newCustomer = new Cliente( nextId(), formData.nameCli, formData.apeCli, formData.dniCli );
+  const newCustomer = new Cliente( nextId(customers, prefixObj.customer, totalDigits), formData.nameCli, formData.apeCli, formData.dniCli );
   if( newCustomer.id === '' || newCustomer.nombre === '' || newCustomer.apellido === '' || newCustomer.dni === '' ){
     alert( 'Complete todos los campos del nuevo cliente' );
   }else{

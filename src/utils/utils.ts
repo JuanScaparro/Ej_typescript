@@ -66,3 +66,10 @@ export function getNewIdNumber( prevId: string, prefix:string ): string{
  const newId = (idToEval + 1).toString()
  return newId
 }
+
+export function nextId(listType: any[], prefixType: string, totalDigits: number): string {
+  const prevId = listType[listType.length-1].id;
+  const newIdNumber = getNewIdNumber( prevId , prefixType );
+  const newFullId = getNewFullId( newIdNumber, prefixType, totalDigits );
+  return newFullId;
+};

@@ -1,6 +1,6 @@
 import { Administrativo } from '../models/administrativo.model.js';
 import { administrativeMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, getNewFullId, getNewIdNumber } from '../utils/utils.js';
+import { getFormData, nextId } from '../utils/utils.js';
 
 
 
@@ -51,25 +51,15 @@ function sendForm( event: any ) {
   printId();
 }
 
-function nextId(): string {
-
-  const prevId = administratives[ administratives.length - 1 ].id;
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.administrative );
-  const newFullId = getNewFullId( newIdNumber, prefixObj.administrative, totalDigits );
-
-  return newFullId;
-
-};
-
 function printId() {
 
   const isH2: boolean = idAdm.hasChildNodes();
 
   if( isH2 ) {
-    idAdm.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+    idAdm.getElementsByTagName( 'h2' )[0].innerHTML = nextId(administratives, prefixObj.administrative, totalDigits);
   }else {
     const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId() );
+    const h2Text = document.createTextNode( nextId(administratives, prefixObj.administrative, totalDigits) );
     nodoH2.appendChild( h2Text );
     idAdm.appendChild( nodoH2 );
   }
@@ -78,7 +68,7 @@ function printId() {
 
 function addAdmin( formData: any ) {
 
-  const newAdministrative = new Administrativo( nextId(), formData.nameAdm, formData.apeAdm, formData.dniAdm );
+  const newAdministrative = new Administrativo( nextId(administratives, prefixObj.administrative, totalDigits), formData.nameAdm, formData.apeAdm, formData.dniAdm );
   if( newAdministrative.id === '' || newAdministrative.nombre === '' || newAdministrative.apellido === '' || newAdministrative.dni === '' ){
     alert( 'Complete todos los campos del nuevo Administrativo' );
   }else{

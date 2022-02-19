@@ -1,6 +1,6 @@
 import { Proveedor } from "../models/proveedor.model.js";
 import { providersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, getNewIdNumber, getNewFullId } from '../utils/utils.js';
+import { getFormData, nextId } from '../utils/utils.js';
 
 
 let providers: Proveedor[] = [];
@@ -49,25 +49,15 @@ function sendForm( event: any ) {
   printId();
 };
 
-function nextId(): string {
-
-  const prevId = providers[ providers.length - 1 ].id;
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.dealer );
-  const newFullId = getNewFullId( newIdNumber, prefixObj.dealer, totalDigits );
-
-  return newFullId
-
-};
-
 function printId() {
 
   const isH2: boolean = idProv.hasChildNodes();
 
   if( isH2 ) {
-    idProv.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+    idProv.getElementsByTagName( 'h2' )[0].innerHTML = nextId(providers, prefixObj.dealer, totalDigits);
   }else {
     const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId() );
+    const h2Text = document.createTextNode( nextId(providers, prefixObj.dealer, totalDigits) );
     nodoH2.appendChild( h2Text );
     idProv.appendChild( nodoH2 );
   }
@@ -76,7 +66,7 @@ function printId() {
 
 function addProvider( formData: any ) {
 
-  const newProvider = new Proveedor( nextId(), formData.nameProv, formData.apeProv, formData.dniProv );
+  const newProvider = new Proveedor( nextId(providers, prefixObj.dealer, totalDigits), formData.nameProv, formData.apeProv, formData.dniProv );
   if( newProvider.id === '' || newProvider.nombre === '' || newProvider.apellido === '' || newProvider.dni === '' ){
     alert( 'Complete todos los campos del nuevo proveedor' );
   }else{

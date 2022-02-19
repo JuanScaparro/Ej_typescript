@@ -1,6 +1,6 @@
 import { Venta } from "../models/ventas.model.js";
 import { prefixObj, saleMock, totalDigits } from "../utils/data.js";
-import { getFormData, buildSelectOptions, getNewFullId, getNewIdNumber } from '../utils/utils.js';
+import { getFormData, buildSelectOptions, nextId } from '../utils/utils.js';
 import { sellersMock, customersMock } from '../utils/data.js';
 
 
@@ -55,24 +55,14 @@ function sendForm( event: any )  {
   printId();
 };
 
-function nextId(): string {
-  
-  const prevId = sales[sales.length-1].id;
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.sale );
-  const newFullId = getNewFullId( newIdNumber, prefixObj.sale, totalDigits );
-
-  return newFullId;
-
-};
-
 function printId() {
   const isH2: boolean = idVta.hasChildNodes();
 
   if( isH2 ) {
-    idVta.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+    idVta.getElementsByTagName( 'h2' )[0].innerHTML = nextId(sales, prefixObj.sale, totalDigits);
   }else {
     const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId() );
+    const h2Text = document.createTextNode( nextId(sales, prefixObj.sale, totalDigits) );
     nodoH2.appendChild( h2Text );
     idVta.appendChild( nodoH2 );
   }
@@ -80,7 +70,7 @@ function printId() {
 
 function addSale( formData: any ){
 
-  const newSale = new Venta( nextId(), formData.totalVta, formData.clientsId, formData.sellersId );
+  const newSale = new Venta( nextId(sales, prefixObj.sale, totalDigits), formData.totalVta, formData.clientsId, formData.sellersId );
   if( newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '' ){
     alert( 'Complete todos los campos de la venta' );
   }else{
@@ -105,6 +95,5 @@ function init(){
   buildSelectOptions( sellersMock, optionSellersSelect );
   printSales();
   printId();
-  
 };
 init();

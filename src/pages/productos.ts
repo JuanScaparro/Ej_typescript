@@ -1,6 +1,6 @@
 import { Producto } from "../models/producto.model.js";
 import { productsMock, providersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, buildSelectOptions, getNewIdNumber, getNewFullId } from '../utils/utils.js'
+import { getFormData, buildSelectOptions, nextId } from '../utils/utils.js'
 import { getDiscount } from '../utils/utils.js'
 import { getDiscountPercent } from '../utils/utils.js';
 
@@ -62,25 +62,15 @@ function sendForm(event: any)  {
   printId();
 }
 
-function nextId(): string {
-  
-  const prevId = products[products.length-1].id;
-  const newIdNumber = getNewIdNumber( prevId , prefixObj.product );
-  const newFullId = getNewFullId( newIdNumber, prefixObj.product, totalDigits );
-
-  return newFullId;
-
-};
-
 function printId() {
 
   const isH2: boolean = idProd.hasChildNodes();
 
   if( isH2 ) {
-    idProd.getElementsByTagName( 'h2' )[0].innerHTML = nextId();
+    idProd.getElementsByTagName( 'h2' )[0].innerHTML = nextId(products, prefixObj.product, totalDigits);
   }else {
     const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId() );
+    const h2Text = document.createTextNode( nextId(products, prefixObj.product, totalDigits) );
     nodoH2.appendChild( h2Text );
     idProd.appendChild( nodoH2 );
   }
@@ -88,7 +78,7 @@ function printId() {
 
 function addProduct(formData: any){
 
-  const newProd = new Producto( nextId(), formData.c_desc, Number(formData.c_price), formData.c_idProv );
+  const newProd = new Producto( nextId(products, prefixObj.product, totalDigits), formData.c_desc, Number(formData.c_price), formData.c_idProv );
   if(newProd.id === '' || newProd.descripcion === '' || newProd.precio === 0 || newProd.idProveedor === ''){
     alert('Complete todos los campos');
   }else{
