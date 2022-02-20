@@ -1,11 +1,17 @@
 import { Vendedor } from '../models/vendedor.model.js';
 import { prefixObj, sellersMock, totalDigits } from '../utils/data.js';
-import { getFormData, getNewFullId, getNewIdNumber } from '../utils/utils.js';
+import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 let sellers = [];
 const tbodyVend = document.getElementById('tbodyVend');
 const btnFormSeller = document.getElementById('btnFormSeller');
 btnFormSeller.addEventListener('click', sendForm);
 const idSeller = document.getElementById('idSeller');
+const printIdPayload = {
+    idForm: idSeller,
+    list: sellers,
+    prefix: prefixObj.seller,
+    totalDigits: totalDigits
+};
 function printSaller() {
     sellers.forEach(item => { buildTableItem(item); });
 }
@@ -35,51 +41,23 @@ function buildTableItem(item) {
 function sendForm(event) {
     const sendForm = getFormData(event);
     addSeller(sendForm);
-    printId();
-}
-;
-function nextId() {
-    const prevId = sellers[sellers.length - 1].id;
-    const newIdNumber = getNewIdNumber(prevId, prefixObj.seller);
-    const newFullId = getNewFullId(newIdNumber, prefixObj.seller, totalDigits);
-    return newFullId;
-}
-;
-function printId() {
-    const isH2 = idSeller.hasChildNodes();
-    if (isH2) {
-        idSeller.getElementsByTagName('h2')[0].innerHTML = nextId();
-    }
-    else {
-        const nodoH2 = document.createElement('h2');
-        const h2Text = document.createTextNode(nextId());
-        nodoH2.appendChild(h2Text);
-        idSeller.appendChild(nodoH2);
-    }
+    printId(printIdPayload);
 }
 ;
 function addSeller(formData) {
-    const newSeller = new Vendedor(nextId(), formData.nameSeller, formData.apeSeller, formData.dniSeller);
-    if (newSeller.id === '' || newSeller.nombre === '' || newSeller.apellido === '' || newSeller.dni === '') {
-        alert('Complete todos los campos del nuevo Vendedor');
-    }
-    else {
-        sellers.push(newSeller);
-        localStorage.setItem('sellers', JSON.stringify(sellers));
-        buildTableItem(newSeller);
-    }
+    const { error, data } = formData;
+    if (error)
+        return;
+    const newSeller = new Vendedor(nextId(sellers, prefixObj.seller, totalDigits), data.nameSeller, data.apeSeller, data.dniSeller);
+    sellers.push(newSeller);
+    localStorage.setItem('sellers', JSON.stringify(sellers));
+    buildTableItem(newSeller);
 }
 ;
 function init() {
-    sellers = [...sellersMock];
-    const sellersLS = localStorage.getItem('sellers');
-    if (sellersLS) {
-        sellers = JSON.parse(sellersLS);
-    }
-    else {
-        localStorage.setItem('sellers', JSON.stringify(sellers));
-    }
-    printId();
+    sellers = handleLS('sellers', [...sellersMock]);
+    printIdPayload.list = sellers;
+    printId(printIdPayload);
     printSaller();
 }
 init();

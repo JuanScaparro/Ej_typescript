@@ -4,24 +4,39 @@ export function getFormData(event: any): any  {
   event.preventDefault();
   const formRefId = event.target.parentElement.id;
   const formRef: HTMLFormElement = <HTMLFormElement>document.getElementById( formRefId );
+  let isError: boolean = false
   const inputs = formRef.querySelectorAll( "input" );
   const selects = formRef.querySelectorAll( "select" );
-  let result = {}
+  let result = {
+    error: isError,
+    data: {}
+  }
 
   inputs.forEach( (input:HTMLInputElement) => {
-    result = {
-      ...result,
+    input.value === "" && (isError=true);
+    result.data = {
+      ...result.data,
       [input.id]: input.value
     }
   })
   selects.forEach( (select: HTMLSelectElement) => {
-    result = {
-      ...result,
+    select.options[select.selectedIndex].value === "" && (isError = true);
+    result.data = {
+      ...result.data,
       [select.id]: select.options[select.selectedIndex].value
     }
   })
-  formRef.reset();
+  if(isError){
+    showError()
+    result.error = isError
+  }else{
+    formRef.reset();
+  }
   return result;
+}
+
+function showError(): void{
+  alert( 'Complete todos los campos de la venta' );
 }
 
 export function getDiscount( item: number ): number {
@@ -72,4 +87,28 @@ export function nextId(listType: any[], prefixType: string, totalDigits: number)
   const newIdNumber = getNewIdNumber( prevId , prefixType );
   const newFullId = getNewFullId( newIdNumber, prefixType, totalDigits );
   return newFullId;
+};
+
+export function handleLS ( key: string, dataMock?: any[] ): any[] {
+  let returnData: any[] = dataMock || []
+  const resultData: string | null = localStorage.getItem( key );
+  if( resultData ){
+    returnData = JSON.parse( resultData );
+  }else{
+    localStorage.setItem( key, JSON.stringify( returnData ) );
+  }
+  return returnData
+}
+
+export function printId(payload: any ): void {
+  const { idForm, list, prefix, totalDigits } = payload
+  const isH2: boolean = idForm.hasChildNodes();
+  if( isH2 ) {
+    idForm.getElementsByTagName( 'h2' )[0].innerHTML = nextId(list, prefix, totalDigits);
+  }else {
+    const nodoH2 = document.createElement( 'h2' );
+    const h2Text = document.createTextNode( nextId(list, prefix, totalDigits) );
+    nodoH2.appendChild( h2Text );
+    idForm.appendChild( nodoH2 );
+  }
 };

@@ -1,6 +1,6 @@
 import { Proveedor } from "../models/proveedor.model.js";
 import { providersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, nextId } from '../utils/utils.js';
+import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 
 
 let providers: Proveedor[] = [];
@@ -8,6 +8,12 @@ const tbodyProv = document.getElementById( 'tbodyProv' ) as HTMLElement;
 const btmFormProv = document.getElementById( 'btnFormProv' ) as HTMLElement;
 btmFormProv.addEventListener( 'click', sendForm );
 const idProv = document.getElementById( 'idProv' ) as HTMLFormElement;
+const printIdPayload = {
+  idForm: idProv,
+  list: providers,
+  prefix: prefixObj.dealer,
+  totalDigits: totalDigits
+}
 
 function printProvider(): void {
 
@@ -46,46 +52,23 @@ function builtTableItem( item: any ) {
 function sendForm( event: any ) {
   const formData = getFormData( event );
   addProvider( formData );
-  printId();
-};
-
-function printId() {
-
-  const isH2: boolean = idProv.hasChildNodes();
-
-  if( isH2 ) {
-    idProv.getElementsByTagName( 'h2' )[0].innerHTML = nextId(providers, prefixObj.dealer, totalDigits);
-  }else {
-    const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId(providers, prefixObj.dealer, totalDigits) );
-    nodoH2.appendChild( h2Text );
-    idProv.appendChild( nodoH2 );
-  }
-
+  printId(printIdPayload);
 };
 
 function addProvider( formData: any ) {
-
-  const newProvider = new Proveedor( nextId(providers, prefixObj.dealer, totalDigits), formData.nameProv, formData.apeProv, formData.dniProv );
-  if( newProvider.id === '' || newProvider.nombre === '' || newProvider.apellido === '' || newProvider.dni === '' ){
-    alert( 'Complete todos los campos del nuevo proveedor' );
-  }else{
+  const {error, data} = formData
+  if(error) return
+  const newProvider = new Proveedor( nextId(providers, prefixObj.dealer, totalDigits), data.nameProv, data.apeProv, data.dniProv );
+  
     providers.push( newProvider );
     localStorage.setItem( 'providers', JSON.stringify( providers ) );
     builtTableItem( newProvider );
-  };
 };
 
 function init() {
-  providers = [ ...providersMock ];
-  const providersLS = localStorage.getItem( 'providers' );
-
-  if( providersLS ){
-    providers = JSON.parse( providersLS );
-  }else{
-    localStorage.setItem( 'providers', JSON.stringify( providers ) );
-  }
+  providers = handleLS('providers',[ ...providersMock ]);
+  printIdPayload.list = providers
   printProvider();
-  printId();
+  printId(printIdPayload);
 }
 init();

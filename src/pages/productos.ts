@@ -1,6 +1,6 @@
 import { Producto } from "../models/producto.model.js";
-import { productsMock, providersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, buildSelectOptions, nextId } from '../utils/utils.js'
+import { productsMock, prefixObj, totalDigits } from '../utils/data.js';
+import { getFormData, buildSelectOptions, nextId, handleLS, printId } from '../utils/utils.js'
 import { getDiscount } from '../utils/utils.js'
 import { getDiscountPercent } from '../utils/utils.js';
 
@@ -11,6 +11,14 @@ const btnSubmitForm: HTMLElement = <HTMLElement>document.getElementById("btnForm
 btnSubmitForm.addEventListener('click', sendForm);
 const optionProductSelect = document.getElementById( 'c_idProv' ) as HTMLSelectElement;
 const idProd = document.getElementById( 'c_id' ) as HTMLFormElement;
+const printIdPayload = {
+  idForm: idProd,
+  list: products,
+  prefix: prefixObj.product,
+  totalDigits: totalDigits
+}
+
+
 
 function printproducts(): void {
   products.forEach( (prod) => {
@@ -59,49 +67,30 @@ function buildTableItem( item:any){
 function sendForm(event: any)  {
   const formData = getFormData(event);
   addProduct(formData);
-  printId();
+  printId(printIdPayload);
 }
 
-function printId() {
-
-  const isH2: boolean = idProd.hasChildNodes();
-
-  if( isH2 ) {
-    idProd.getElementsByTagName( 'h2' )[0].innerHTML = nextId(products, prefixObj.product, totalDigits);
-  }else {
-    const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId(products, prefixObj.product, totalDigits) );
-    nodoH2.appendChild( h2Text );
-    idProd.appendChild( nodoH2 );
-  }
-};
-
 function addProduct(formData: any){
+  const {error, data} = formData
+  if(error) return
+  const newProd = new Producto( nextId(products, prefixObj.product, totalDigits), data.c_desc, Number(data.c_price), data.c_idProv );
 
-  const newProd = new Producto( nextId(products, prefixObj.product, totalDigits), formData.c_desc, Number(formData.c_price), formData.c_idProv );
-  if(newProd.id === '' || newProd.descripcion === '' || newProd.precio === 0 || newProd.idProveedor === ''){
-    alert('Complete todos los campos');
-  }else{
-    products.push(newProd);
-    localStorage.setItem("products", JSON.stringify(products));
-    buildTableItem(newProd);
-  }
+  products.push(newProd);
+  localStorage.setItem("products", JSON.stringify(products));
+  buildTableItem(newProd)
 }
 
 // Inicia el flujo del codigo
 function init(){
 
-  products = [...productsMock];
-  const productsLS = localStorage.getItem("products");
+  
+  products = handleLS('products', [...productsMock]);
+  printIdPayload.list = products
+  const providerOptions: any = handleLS('providers');
 
-  if(productsLS){
-    products = JSON.parse(productsLS);
-  }else{
-    localStorage.setItem("products", JSON.stringify(products));
-  }
-  buildSelectOptions( providersMock, optionProductSelect );
+  buildSelectOptions( providerOptions, optionProductSelect );
   printproducts();
-  printId();
+  printId(printIdPayload);
 }
 
 

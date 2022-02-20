@@ -1,6 +1,6 @@
 import { Vendedor } from '../models/vendedor.model.js';
 import { prefixObj, sellersMock, totalDigits } from '../utils/data.js';
-import { getFormData, nextId } from '../utils/utils.js';
+import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 
 
 
@@ -9,6 +9,12 @@ const tbodyVend = document.getElementById( 'tbodyVend' ) as HTMLElement;
 const btnFormSeller = document.getElementById( 'btnFormSeller' ) as HTMLButtonElement;
 btnFormSeller.addEventListener( 'click', sendForm );
 const idSeller = document.getElementById( 'idSeller' ) as HTMLFormElement
+const printIdPayload = {
+  idForm: idSeller,
+  list: sellers,
+  prefix: prefixObj.seller,
+  totalDigits: totalDigits
+}
 
 function printSaller(): void {
 
@@ -47,47 +53,24 @@ function buildTableItem( item: any ) {
 function sendForm( event: any ) {
   const sendForm = getFormData( event );
   addSeller( sendForm );
-  printId()
-};
-
-function printId() {
-
-  const isH2: boolean = idSeller!.hasChildNodes();
-  
-  if( isH2 ){
-    idSeller.getElementsByTagName( 'h2' )[0].innerHTML = nextId(sellers, prefixObj.seller, totalDigits)
-  }else{
-    const nodoH2 = document.createElement( 'h2' )
-    const h2Text = document.createTextNode( nextId(sellers, prefixObj.seller, totalDigits) );
-    nodoH2.appendChild( h2Text );
-    idSeller.appendChild( nodoH2 );
-  }
-
+  printId(printIdPayload)
 };
 
 function addSeller( formData: any ) {
+  const {error, data} = formData
+  if(error) return
+  const newSeller = new Vendedor( nextId(sellers, prefixObj.seller, totalDigits), data.nameSeller, data.apeSeller, data.dniSeller );
   
-  const newSeller = new Vendedor( nextId(sellers, prefixObj.seller, totalDigits), formData.nameSeller, formData.apeSeller, formData.dniSeller );
-  if( newSeller.id === '' || newSeller.nombre === '' || newSeller.apellido === '' || newSeller.dni === '' ) {
-    alert( 'Complete todos los campos del nuevo Vendedor' );
-  } else {
-    sellers.push( newSeller );
-    localStorage.setItem( 'sellers', JSON.stringify( sellers ) );
-    buildTableItem( newSeller );
-  }
+  sellers.push( newSeller );
+  localStorage.setItem( 'sellers', JSON.stringify( sellers ) );
+  buildTableItem( newSeller );
 
 };
 
 function init() {
-  sellers = [ ...sellersMock ];
-  const sellersLS = localStorage.getItem( 'sellers' );
-
-  if( sellersLS ){
-    sellers = JSON.parse( sellersLS );
-  }else{
-    localStorage.setItem( 'sellers', JSON.stringify( sellers ) );
-  }
-  printId()
+  sellers = handleLS('sellers', [ ...sellersMock ]);
+  printIdPayload.list = sellers
+  printId(printIdPayload)
   printSaller();
 }
 init();

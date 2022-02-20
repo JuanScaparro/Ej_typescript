@@ -1,7 +1,7 @@
 import { Venta } from "../models/ventas.model.js";
-import { prefixObj, saleMock, totalDigits } from "../utils/data.js";
-import { getFormData, buildSelectOptions, nextId } from '../utils/utils.js';
-import { sellersMock, customersMock } from '../utils/data.js';
+import { prefixObj, salesMock, totalDigits } from "../utils/data.js";
+import { getFormData, buildSelectOptions, nextId, handleLS, printId } from '../utils/utils.js';
+
 
 
 
@@ -12,6 +12,12 @@ btnSubmitForm.addEventListener( 'click', sendForm );
 const optionClientsSelect = document.getElementById( 'clientsId' ) as HTMLSelectElement;
 const optionSellersSelect = document.getElementById( 'sellersId' ) as HTMLSelectElement;
 const idVta = document.getElementById( 'idVta' ) as HTMLFormElement;
+const printIdPayload = {
+  idForm: idVta,
+  list: sales,
+  prefix: prefixObj.sale,
+  totalDigits: totalDigits
+}
 
 
 
@@ -52,48 +58,34 @@ function buildTableItem( item:any ){
 function sendForm( event: any )  {
   const formData = getFormData( event );
   addSale( formData );
-  printId();
-};
-
-function printId() {
-  const isH2: boolean = idVta.hasChildNodes();
-
-  if( isH2 ) {
-    idVta.getElementsByTagName( 'h2' )[0].innerHTML = nextId(sales, prefixObj.sale, totalDigits);
-  }else {
-    const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId(sales, prefixObj.sale, totalDigits) );
-    nodoH2.appendChild( h2Text );
-    idVta.appendChild( nodoH2 );
-  }
+  printId(printIdPayload);
 };
 
 function addSale( formData: any ){
 
-  const newSale = new Venta( nextId(sales, prefixObj.sale, totalDigits), formData.totalVta, formData.clientsId, formData.sellersId );
-  if( newSale.id === '' || newSale.importe === 0 || newSale.idCliente === '' || newSale.idVendedor === '' ){
-    alert( 'Complete todos los campos de la venta' );
-  }else{
-    sales.push( newSale );
-    localStorage.setItem( 'sales', JSON.stringify( sales ));
-    buildTableItem( newSale );
-  }
+  const {error, data} = formData
+  if(error) return
+
+  const newSale = new Venta( nextId(sales, prefixObj.sale, totalDigits), data.totalVta, data.clientsId, data.sellersId );
+
+  sales.push( newSale );
+  localStorage.setItem( 'sales', JSON.stringify( sales ));
+  buildTableItem( newSale );
+ 
 };
 
 
 function init(){
 
-  sales = [ ...saleMock ];
-  const salesLS = localStorage.getItem( 'sales' );
-
-  if( salesLS ){
-    sales = JSON.parse( salesLS );
-  }else{
-    localStorage.setItem( 'sales', JSON.stringify( sales ) );
-  }
-  buildSelectOptions( customersMock, optionClientsSelect );
-  buildSelectOptions( sellersMock, optionSellersSelect );
+  sales = handleLS("sales", [...salesMock])
+  printIdPayload.list = sales
+  const customerOptions: any[] = handleLS("customers")
+  const sellerOptions: any[] = handleLS('sellers')
+  buildSelectOptions( customerOptions, optionClientsSelect );
+  buildSelectOptions( sellerOptions, optionSellersSelect );
   printSales();
-  printId();
+  printId(printIdPayload);
 };
 init();
+
+

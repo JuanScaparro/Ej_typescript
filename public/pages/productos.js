@@ -1,6 +1,6 @@
 import { Producto } from "../models/producto.model.js";
-import { productsMock, providersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, buildSelectOptions, getNewIdNumber, getNewFullId } from '../utils/utils.js';
+import { productsMock, prefixObj, totalDigits } from '../utils/data.js';
+import { getFormData, buildSelectOptions, nextId, handleLS, printId } from '../utils/utils.js';
 import { getDiscount } from '../utils/utils.js';
 import { getDiscountPercent } from '../utils/utils.js';
 let products = [];
@@ -9,6 +9,12 @@ const btnSubmitForm = document.getElementById("btnFormProd");
 btnSubmitForm.addEventListener('click', sendForm);
 const optionProductSelect = document.getElementById('c_idProv');
 const idProd = document.getElementById('c_id');
+const printIdPayload = {
+    idForm: idProd,
+    list: products,
+    prefix: prefixObj.product,
+    totalDigits: totalDigits
+};
 function printproducts() {
     products.forEach((prod) => {
         buildTableItem(prod);
@@ -46,51 +52,24 @@ function buildTableItem(item) {
 function sendForm(event) {
     const formData = getFormData(event);
     addProduct(formData);
-    printId();
+    printId(printIdPayload);
 }
-function nextId() {
-    const prevId = products[products.length - 1].id;
-    const newIdNumber = getNewIdNumber(prevId, prefixObj.product);
-    const newFullId = getNewFullId(newIdNumber, prefixObj.product, totalDigits);
-    return newFullId;
-}
-;
-function printId() {
-    const isH2 = idProd.hasChildNodes();
-    if (isH2) {
-        idProd.getElementsByTagName('h2')[0].innerHTML = nextId();
-    }
-    else {
-        const nodoH2 = document.createElement('h2');
-        const h2Text = document.createTextNode(nextId());
-        nodoH2.appendChild(h2Text);
-        idProd.appendChild(nodoH2);
-    }
-}
-;
 function addProduct(formData) {
-    const newProd = new Producto(nextId(), formData.c_desc, Number(formData.c_price), formData.c_idProv);
-    if (newProd.id === '' || newProd.descripcion === '' || newProd.precio === 0 || newProd.idProveedor === '') {
-        alert('Complete todos los campos');
-    }
-    else {
-        products.push(newProd);
-        localStorage.setItem("products", JSON.stringify(products));
-        buildTableItem(newProd);
-    }
+    const { error, data } = formData;
+    if (error)
+        return;
+    const newProd = new Producto(nextId(products, prefixObj.product, totalDigits), data.c_desc, Number(data.c_price), data.c_idProv);
+    products.push(newProd);
+    localStorage.setItem("products", JSON.stringify(products));
+    buildTableItem(newProd);
 }
 // Inicia el flujo del codigo
 function init() {
-    products = [...productsMock];
-    const productsLS = localStorage.getItem("products");
-    if (productsLS) {
-        products = JSON.parse(productsLS);
-    }
-    else {
-        localStorage.setItem("products", JSON.stringify(products));
-    }
-    buildSelectOptions(providersMock, optionProductSelect);
+    products = handleLS('products', [...productsMock]);
+    printIdPayload.list = products;
+    const providerOptions = handleLS('providers');
+    buildSelectOptions(providerOptions, optionProductSelect);
     printproducts();
-    printId();
+    printId(printIdPayload);
 }
 init();

@@ -5,9 +5,9 @@ export class Venta  {
   idCliente: string;
   idVendedor: string;
 
-  constructor( _id: string,_importe: number, _idCliente: string,  _idVendedor: string ){
+  constructor( _id: string,_importe: string, _idCliente: string,  _idVendedor: string ){
     this.id = _id;
-    this.importe = _importe;
+    this.importe =  Number(_importe);
     this.idCliente = _idCliente;
     this.idVendedor = _idVendedor;
   }

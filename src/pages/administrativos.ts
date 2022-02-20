@@ -1,6 +1,6 @@
 import { Administrativo } from '../models/administrativo.model.js';
-import { administrativeMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, nextId } from '../utils/utils.js';
+import { administrativesMock, prefixObj, totalDigits } from '../utils/data.js';
+import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 
 
 
@@ -9,6 +9,12 @@ const tbodyAdm = document.getElementById("tbodyAdm") as HTMLElement;
 const btnFormAdm = document.getElementById( 'btnFormAdm' ) as HTMLButtonElement;
 btnFormAdm.addEventListener( 'click', sendForm );
 const idAdm = document.getElementById( 'idAdm' ) as HTMLFormElement;
+const printIdPayload = {
+  idForm: idAdm,
+  list: administratives,
+  prefix: prefixObj.administrative,
+  totalDigits: totalDigits
+}
 
 function printAdministratives(): void {
 
@@ -48,46 +54,26 @@ function buildTableItem( item: any ){
 function sendForm( event: any ) {
   const formData = getFormData( event );
   addAdmin( formData );
-  printId();
+  printId(printIdPayload);
 }
 
-function printId() {
-
-  const isH2: boolean = idAdm.hasChildNodes();
-
-  if( isH2 ) {
-    idAdm.getElementsByTagName( 'h2' )[0].innerHTML = nextId(administratives, prefixObj.administrative, totalDigits);
-  }else {
-    const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId(administratives, prefixObj.administrative, totalDigits) );
-    nodoH2.appendChild( h2Text );
-    idAdm.appendChild( nodoH2 );
-  }
-
-};
 
 function addAdmin( formData: any ) {
+  const {error, data} = formData
+  if(error) return
+  
+  const newAdministrative = new Administrativo( nextId(administratives, prefixObj.administrative, totalDigits), data.nameAdm, data.apeAdm, data.dniAdm );
 
-  const newAdministrative = new Administrativo( nextId(administratives, prefixObj.administrative, totalDigits), formData.nameAdm, formData.apeAdm, formData.dniAdm );
-  if( newAdministrative.id === '' || newAdministrative.nombre === '' || newAdministrative.apellido === '' || newAdministrative.dni === '' ){
-    alert( 'Complete todos los campos del nuevo Administrativo' );
-  }else{
-    administratives.push( newAdministrative );
-    localStorage.setItem( 'administratives', JSON.stringify( administratives ) );
-    buildTableItem( newAdministrative );
-  };
+  administratives.push( newAdministrative );
+  localStorage.setItem( 'administratives', JSON.stringify( administratives ) );
+  buildTableItem( newAdministrative );
+
 }
 
 function init() {
-  administratives = [ ...administrativeMock ];
-  const administrativesLS = localStorage.getItem( 'administratives' );
-
-  if( administrativesLS ){
-    administratives = JSON.parse( administrativesLS );
-  }else{
-    localStorage.setItem( 'administratives', JSON.stringify( administratives ) );
-  }
+  administratives = handleLS('administravives',[ ...administrativesMock ]);
+  printIdPayload.list = administratives
   printAdministratives();
-  printId();
+  printId(printIdPayload);
 }
 init();

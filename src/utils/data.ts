@@ -31,18 +31,18 @@ const cliente1: Cliente = new Cliente('C0001', 'Carlos', 'Esperanza', '23456789'
 const cliente2: Cliente = new Cliente('C0002', 'Ernesto', 'Gonzalez', '54367889');
 const cliente3: Cliente = new Cliente('C0003', 'Giorgio', 'Spazza', '34567654');
 
-const venta1: Venta = new Venta('VT0001', prod1.precio, cliente2.id, valentino.id );
-const venta2: Venta = new Venta('VT0002', prod4.precio, cliente1.id, mariela.id);
-const venta3: Venta = new Venta('VT0003', prod5.precio, cliente2.id, mariela.id);
+const venta1: Venta = new Venta('VT0001', String(prod1.precio), cliente2.id, valentino.id );
+const venta2: Venta = new Venta('VT0002', String(prod4.precio), cliente1.id, mariela.id);
+const venta3: Venta = new Venta('VT0003', String(prod5.precio), cliente2.id, mariela.id);
 
 
 export const providersMock: Proveedor[] = [ leFit, canvas, gda, vaqFel, leafCo ];
 export const productsMock: Producto[] = [ prod1, prod2, prod3, prod4, prod5, prod6, prod7 ];
 export const empleados: Empleado[] = [ juan, mariela ];
 export const customersMock: Cliente[] = [ cliente1, cliente2, cliente3 ];
-export const administrativeMock: Administrativo[] = [juan, lorenzo];
+export const administrativesMock: Administrativo[] = [juan, lorenzo];
 export const sellersMock: Vendedor[] = [mariela, valentino, carlos];
-export const saleMock: Venta[] = [venta1, venta2, venta3];
+export const salesMock: Venta[] = [venta1, venta2, venta3];
 
 
 export const prefixObj = {

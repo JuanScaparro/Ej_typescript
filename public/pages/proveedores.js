@@ -1,11 +1,17 @@
 import { Proveedor } from "../models/proveedor.model.js";
 import { providersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, getNewIdNumber, getNewFullId } from '../utils/utils.js';
+import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 let providers = [];
 const tbodyProv = document.getElementById('tbodyProv');
 const btmFormProv = document.getElementById('btnFormProv');
 btmFormProv.addEventListener('click', sendForm);
 const idProv = document.getElementById('idProv');
+const printIdPayload = {
+    idForm: idProv,
+    list: providers,
+    prefix: prefixObj.dealer,
+    totalDigits: totalDigits
+};
 function printProvider() {
     providers.forEach(item => { builtTableItem(item); });
 }
@@ -34,52 +40,23 @@ function builtTableItem(item) {
 function sendForm(event) {
     const formData = getFormData(event);
     addProvider(formData);
-    printId();
-}
-;
-function nextId() {
-    const prevId = providers[providers.length - 1].id;
-    const newIdNumber = getNewIdNumber(prevId, prefixObj.dealer);
-    const newFullId = getNewFullId(newIdNumber, prefixObj.dealer, totalDigits);
-    return newFullId;
-}
-;
-function printId() {
-    const isH2 = idProv.hasChildNodes();
-    if (isH2) {
-        idProv.getElementsByTagName('h2')[0].innerHTML = nextId();
-    }
-    else {
-        const nodoH2 = document.createElement('h2');
-        const h2Text = document.createTextNode(nextId());
-        nodoH2.appendChild(h2Text);
-        idProv.appendChild(nodoH2);
-    }
+    printId(printIdPayload);
 }
 ;
 function addProvider(formData) {
-    const newProvider = new Proveedor(nextId(), formData.nameProv, formData.apeProv, formData.dniProv);
-    if (newProvider.id === '' || newProvider.nombre === '' || newProvider.apellido === '' || newProvider.dni === '') {
-        alert('Complete todos los campos del nuevo proveedor');
-    }
-    else {
-        providers.push(newProvider);
-        localStorage.setItem('providers', JSON.stringify(providers));
-        builtTableItem(newProvider);
-    }
-    ;
+    const { error, data } = formData;
+    if (error)
+        return;
+    const newProvider = new Proveedor(nextId(providers, prefixObj.dealer, totalDigits), data.nameProv, data.apeProv, data.dniProv);
+    providers.push(newProvider);
+    localStorage.setItem('providers', JSON.stringify(providers));
+    builtTableItem(newProvider);
 }
 ;
 function init() {
-    providers = [...providersMock];
-    const providersLS = localStorage.getItem('providers');
-    if (providersLS) {
-        providers = JSON.parse(providersLS);
-    }
-    else {
-        localStorage.setItem('providers', JSON.stringify(providers));
-    }
+    providers = handleLS('providers', [...providersMock]);
+    printIdPayload.list = providers;
     printProvider();
-    printId();
+    printId(printIdPayload);
 }
 init();

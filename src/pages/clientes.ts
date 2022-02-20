@@ -1,12 +1,18 @@
 import { Cliente } from "../models/cliente.model.js";
 import { customersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, nextId } from '../utils/utils.js';
+import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 
 let customers: Cliente[] = [];
 const tbodyCli = document.getElementById( 'tbodyCli' ) as HTMLElement;
 const btnFormCli = document.getElementById( 'btnFormCli' ) as HTMLElement;
 btnFormCli.addEventListener( 'click', sendForm );
 const idCli = document.getElementById( 'idCli' ) as HTMLFormElement;
+const printIdPayload = {
+  idForm: idCli,
+  list: customers,
+  prefix: prefixObj.customer,
+  totalDigits: totalDigits
+}
 
 
 function printCustomers(): void {
@@ -14,9 +20,6 @@ function printCustomers(): void {
   customers.forEach( item => { buildTableItem( item ) });
 
 };
-
-
-// GENERA DINAMICAMENTE LA TABLA DE CLIENTES
 
 function buildTableItem( item: any ){
 
@@ -51,44 +54,29 @@ function buildTableItem( item: any ){
 function sendForm( event: any ) {
   const formData = getFormData( event );
   addCustomer( formData );
-  printId()
+  printId(printIdPayload);
 };
 
-function printId() {
-  const isH2: boolean = idCli.hasChildNodes();
 
-  if( isH2 ) {
-    idCli.getElementsByTagName( 'h2' )[0].innerHTML = nextId(customers, prefixObj.customer, totalDigits);
-  }else {
-    const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId(customers, prefixObj.customer, totalDigits) );
-    nodoH2.appendChild( h2Text );
-    idCli.appendChild( nodoH2 );
-  }
-}
+
 
 function addCustomer( formData: any ) {
+  const {error, data} = formData
+  if(error) return
 
-  const newCustomer = new Cliente( nextId(customers, prefixObj.customer, totalDigits), formData.nameCli, formData.apeCli, formData.dniCli );
-  if( newCustomer.id === '' || newCustomer.nombre === '' || newCustomer.apellido === '' || newCustomer.dni === '' ){
-    alert( 'Complete todos los campos del nuevo cliente' );
-  }else{
-    customers.push( newCustomer );
-    localStorage.setItem( 'customers', JSON.stringify( customers ) );
-    buildTableItem( newCustomer );
-  };
+  const newCustomer = new Cliente( nextId(customers, prefixObj.customer, totalDigits), data.nameCli, data.apeCli, data.dniCli );
+
+  customers.push( newCustomer );
+  localStorage.setItem( 'customers', JSON.stringify( customers ) );
+  buildTableItem( newCustomer );
+
 };
 
 function init() {
-  customers = [ ...customersMock ];
-  const customersLS = localStorage.getItem( 'customers' );
-
-  if( customersLS ){
-    customers = JSON.parse( customersLS );
-  }else{
-    localStorage.setItem( 'customers', JSON.stringify( customers ) );
-  }
+  customers = handleLS('customers',[ ...customersMock ]);
+  printIdPayload.list = customers
   printCustomers();
-  printId();
+  printId(printIdPayload);
 }
 init();
+
