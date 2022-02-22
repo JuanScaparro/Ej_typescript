@@ -37,20 +37,20 @@ export function getFormData(event: any): any  {
 
 function showError(): void{
   alert( 'Complete todos los campos de la venta' );
-}
+};
 
 export function getDiscount( item: number ): number {
   const price = item
   const discount =  price *0.10
   const resultDisc = price - discount
   return  Number(resultDisc.toFixed(2))
-}
+};
 
 export function getDiscountPercent( item: number ): number {
   const price = item
   const discount = price - getDiscount(item) //price *0.10
   return Number(discount.toFixed(2))
-}
+};
 
 
 export function buildSelectOptions(list: any[], selectRef: HTMLSelectElement) {
@@ -74,13 +74,13 @@ export function getNewFullId(id:string, prefix: string, totalDigits: number) {
   return id.length >= totalDigits 
       ? prefix + id
       : prefix + new Array( totalDigits - id.length + 1).join('0') + id;
-}
+};
 
 export function getNewIdNumber( prevId: string, prefix:string ): string{
   const idToEval: number = parseInt(prevId.slice(prefix.length))
  const newId = (idToEval + 1).toString()
  return newId
-}
+};
 
 export function nextId(listType: any[], prefixType: string, totalDigits: number): string {
   const prevId = listType[listType.length-1].id;
@@ -98,7 +98,7 @@ export function handleLS ( key: string, dataMock?: any[] ): any[] {
     localStorage.setItem( key, JSON.stringify( returnData ) );
   }
   return returnData
-}
+};
 
 export function printId(payload: any ): void {
   const { idForm, list, prefix, totalDigits } = payload
@@ -112,3 +112,22 @@ export function printId(payload: any ): void {
     idForm.appendChild( nodoH2 );
   }
 };
+
+export function deleteItem(event: any, key: string, tbody: HTMLElement, callback: any): any {
+  event.preventDefault();
+  const itemId: string = event.target.parentElement.parentElement.id;
+  deleteLS(key, itemId, tbody, callback)
+};
+
+function deleteLS( key: string, id: string, tbody: HTMLElement, callback: any ) {
+  let dataLS: any[] = JSON.parse(localStorage.getItem(key)!);
+  const dataLSFiltered = dataLS.filter( item => item.id !== id)
+  let newDataLS = JSON.stringify(dataLSFiltered)
+  localStorage.setItem(key, newDataLS)
+  resetTable(tbody, callback)
+}
+
+function resetTable(tbody: HTMLElement, callback: any){
+  tbody.innerHTML = "";
+  callback()
+}
