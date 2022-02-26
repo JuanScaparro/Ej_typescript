@@ -1,11 +1,14 @@
 import { Cliente } from "../models/cliente.model.js";
 import { customersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { getFormData, handleLS, nextId, printId } from '../utils/utils.js';
+import { deleteItem, getFormData, handleLS, nextId, printId } from '../utils/utils.js';
 let customers = [];
-const tbodyCli = document.getElementById('tbodyCli');
+const lsKey = 'customers';
+const tbody = document.getElementById('tbodyCli');
 const btnFormCli = document.getElementById('btnFormCli');
 btnFormCli.addEventListener('click', sendForm);
 const idCli = document.getElementById('idCli');
+const btnDelete = document.getElementById('tbodyCli');
+btnDelete.addEventListener('click', (e) => { deleteItem(e, lsKey, tbody, init); });
 const printIdPayload = {
     idForm: idCli,
     list: customers,
@@ -18,6 +21,7 @@ function printCustomers() {
 ;
 function buildTableItem(item) {
     const tr = document.createElement('tr');
+    tr.setAttribute("id", item.id);
     const thId = document.createElement('th');
     thId.setAttribute('scope', 'row');
     const thIdText = document.createTextNode(item.id);
@@ -31,11 +35,25 @@ function buildTableItem(item) {
     const tdDniCli = document.createElement('td');
     const tdDniCliText = document.createTextNode(item.dni);
     tdDniCli.appendChild(tdDniCliText);
+    const tdDel = document.createElement('td');
+    const tdBtnDel = document.createElement('button');
+    tdBtnDel.setAttribute('class', 'btn btn-danger btn-sm');
+    tdDel.appendChild(tdBtnDel);
+    const tdBtnDelText = document.createTextNode('Eliminar');
+    tdBtnDel.appendChild(tdBtnDelText);
+    const tdMod = document.createElement('td');
+    const tdBtnMod = document.createElement('button');
+    tdBtnMod.setAttribute('class', 'btn btn-warning btn-sm');
+    tdMod.appendChild(tdBtnMod);
+    const tdBtnModText = document.createTextNode('Modificar');
+    tdBtnMod.appendChild(tdBtnModText);
     tr.appendChild(thId);
     tr.appendChild(tdNomCli);
     tr.appendChild(tdApeCli);
     tr.appendChild(tdDniCli);
-    tbodyCli.appendChild(tr);
+    tr.appendChild(tdDel);
+    tr.appendChild(tdMod);
+    tbody.appendChild(tr);
 }
 function sendForm(event) {
     const formData = getFormData(event);
@@ -49,12 +67,12 @@ function addCustomer(formData) {
         return;
     const newCustomer = new Cliente(nextId(customers, prefixObj.customer, totalDigits), data.nameCli, data.apeCli, data.dniCli);
     customers.push(newCustomer);
-    localStorage.setItem('customers', JSON.stringify(customers));
+    localStorage.setItem(lsKey, JSON.stringify(customers));
     buildTableItem(newCustomer);
 }
 ;
 function init() {
-    customers = handleLS('customers', [...customersMock]);
+    customers = handleLS(lsKey, [...customersMock]);
     printIdPayload.list = customers;
     printCustomers();
     printId(printIdPayload);

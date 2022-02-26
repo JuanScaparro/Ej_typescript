@@ -11,6 +11,7 @@
   </head>
   <body>
 
+    <!-- Manu navegacion -->
     <div class="container" id="nav">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -50,6 +51,8 @@
         </div>
       </nav>
     </div>
+
+    <!-- Formulario de alta -->
     <div class="container mt-3 contForm">
       <form id="formAdm"  >
         <div class="row">
@@ -76,6 +79,8 @@
         <button id="btnFormAdm" type="submit" class="btn btn-success">Ingresar</button>
       </form>
     </div>
+
+    <!-- Tabla listado registros -->
     <div class="container mt-5">
       <table class="table table-dark table-striped">
         <thead>
@@ -85,6 +90,7 @@
             <th scope="col">Apellido</th>
             <th scope="col">Dni</th>
             <th scope="col">Eliminar</th>
+            <th scope="col">Modificar</th>
           </tr>
         </thead>
         <tbody id="tbodyAdm">
@@ -92,7 +98,53 @@
         </tbody>
       </table>
     </div>
-    
+
+    <!-- Modal para modificar un registro -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateModalLabel">Modificar <span id="idAdmUpdate"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="nameAdmUpdate" class="col-form-label">Nombre</label>
+                <input type="text" class="form-control" id="nameAdmUpdate">
+              </div>
+              <div class="mb-3">
+                <label for="apeAdmUpdate" class="col-form-label">Apellido</label>
+                <input type="text" class="form-control" id="apeAdmUpdate">
+              </div>
+              <div class="mb-3">
+                <label for="dniAdmUpdate" class="col-form-label">DNI</label>
+                <input type="text" class="form-control" id="dniAdmUpdate">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button 
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+              >
+              Cancelar
+            </button>
+            <button 
+              type="button"
+              id="btnUpdateModalSubmit"
+              class="btn btn-success"
+              data-bs-dismiss="modal"
+              >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="./administrativos.js"></script>
+
   </body>
 </html>

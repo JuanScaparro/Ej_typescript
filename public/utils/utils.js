@@ -118,7 +118,9 @@ function deleteLS(key, id, tbody, callback) {
     localStorage.setItem(key, newDataLS);
     resetTable(tbody, callback);
 }
+;
 function resetTable(tbody, callback) {
     tbody.innerHTML = "";
     callback();
 }
+;

@@ -113,21 +113,25 @@ export function printId(payload: any ): void {
   }
 };
 
-export function deleteItem(event: any, key: string, tbody: HTMLElement, callback: any): any {
+export function deleteItem( event: any, key: string, tbody: HTMLElement, callback: any ): any {
   event.preventDefault();
   const itemId: string = event.target.parentElement.parentElement.id;
-  deleteLS(key, itemId, tbody, callback)
+  deleteLS( key, itemId, tbody, callback );
 };
 
+
 function deleteLS( key: string, id: string, tbody: HTMLElement, callback: any ) {
-  let dataLS: any[] = JSON.parse(localStorage.getItem(key)!);
-  const dataLSFiltered = dataLS.filter( item => item.id !== id)
-  let newDataLS = JSON.stringify(dataLSFiltered)
-  localStorage.setItem(key, newDataLS)
-  resetTable(tbody, callback)
-}
+  let dataLS: any[] = JSON.parse(localStorage.getItem( key )!);
+  const dataLSFiltered = dataLS.filter( item => item.id !== id );
+  let newDataLS = JSON.stringify( dataLSFiltered );
+  localStorage.setItem( key, newDataLS );
+  resetTable( tbody, callback );
+};
+
+
+
 
 function resetTable(tbody: HTMLElement, callback: any){
   tbody.innerHTML = "";
-  callback()
-}
+  callback();
+};
