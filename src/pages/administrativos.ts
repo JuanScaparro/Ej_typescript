@@ -1,6 +1,7 @@
+import { IInputsIds } from '../interfaces/iInputsIds.js';
 import { Administrativo } from '../models/administrativo.model.js';
 import { administrativesMock, prefixObj, totalDigits } from '../utils/data.js';
-import { deleteItem, getFormData, handleLS, nextId, printId } from '../utils/utils.js';
+import { deleteItem, getFormData, handleLS, nextId, printId, updateItem } from '../utils/utils.js';
 
 
 let administratives: Administrativo[] = [];
@@ -9,8 +10,8 @@ const tbody = document.getElementById("tbodyAdm") as HTMLElement;
 const btnFormAdm = document.getElementById( 'btnFormAdm' ) as HTMLButtonElement;
 btnFormAdm.addEventListener( 'click', sendForm );
 const idAdm = document.getElementById( 'idAdm' ) as HTMLFormElement;
-const btnUpdateSubmit: HTMLButtonElement = <HTMLButtonElement>document.getElementById('btnUpdateModalSubmit') 
-btnUpdateSubmit.addEventListener('click', updateSubmit)
+const btnUpdateSubmit: HTMLButtonElement = <HTMLButtonElement>document.getElementById( 'btnUpdateModalSubmit' ) 
+btnUpdateSubmit.addEventListener( 'click', updateSubmit )
 
 const printIdPayload = {
   idForm: idAdm,
@@ -18,8 +19,6 @@ const printIdPayload = {
   prefix: prefixObj.administrative,
   totalDigits: totalDigits
 };
-
-
 
 function printAdministratives(): void {
   administratives.forEach( item => { buildTableItem( item ) });
@@ -68,7 +67,22 @@ function buildTableItem( item: any ){
   tdBtnMod.setAttribute( 'id', 'btnMod' );
   tdBtnMod.setAttribute('data-bs-toggle', 'modal') // lanza el modal
   tdBtnMod.setAttribute('data-bs-target', '#updateModal') // Identifica el modal a lanzar
-  tdBtnMod.addEventListener( 'click', ( e ) => { updateItem( e, lsKey, tbody, init )} );
+  const rowIdElement: HTMLElement = <HTMLElement>document.getElementById( 'idAdmUpdate' )
+  const inputs: IInputsIds[] = [
+    {
+      form: "tdName",
+      modal: "nameAdmUpdate"
+    },
+    {
+      form: "tdApe",
+      modal: "apeAdmUpdate"
+    },
+    {
+      form: "tdDni",
+      modal: "dniAdmUpdate"
+    }
+  ]
+  tdBtnMod.addEventListener( 'click', ( e ) => { updateItem( e, rowIdElement, inputs)} );
   tdMod.appendChild(tdBtnMod)
   const tdBtnModText = document.createTextNode( 'Modificar' );
   tdBtnMod.appendChild( tdBtnModText );
@@ -90,57 +104,36 @@ function sendForm( event: any ) {
 };
 
 function addAdmin( formData: any ) {
-  const {error, data} = formData
-  if(error) return  
+  const { error, data } = formData
+  if( error ) return  
   const newAdministrative = new Administrativo( nextId( administratives, prefixObj.administrative, totalDigits ), data.nameAdm, data.apeAdm, data.dniAdm );
   administratives.push( newAdministrative );
   localStorage.setItem( lsKey, JSON.stringify( administratives ) );
   buildTableItem( newAdministrative );
 };
 
-function updateItem( event: any, key: string, tbody: HTMLElement, callback: any ): any {
-  event.preventDefault();
-  // const itemId: string = event.target.parentElement.parentElement.id;
-  const row = event.target.parentElement.parentElement as HTMLElement
-  const userId: string = row.id
-
-  const tdName: string = row.querySelector("#tdName")!.textContent!
-  const tdApe: string = row.querySelector("#tdApe")!.textContent!
-  const tdDni: string = row.querySelector("#tdDni")!.textContent!
-  //
-  const rowId: HTMLElement = <HTMLElement>document.getElementById('idAdmUpdate');
-  const inputModalName: HTMLInputElement = <HTMLInputElement>document.getElementById('nameAdmUpdate');
-  const inputModalApe: HTMLInputElement = <HTMLInputElement>document.getElementById('apeAdmUpdate');
-  const inputModalDni: HTMLInputElement = <HTMLInputElement>document.getElementById('dniAdmUpdate');
-
-  rowId.innerHTML = userId;
-  inputModalName.value = tdName;
-  inputModalApe.value = tdApe;
-  inputModalDni.value = tdDni;
-
+const inputsModifyModal = {
+  name: <HTMLInputElement>document.getElementById( 'nameAdmUpdate' ),
+  ape: <HTMLInputElement>document.getElementById( 'apeAdmUpdate' ),
+  dni: <HTMLInputElement>document.getElementById( 'dniAdmUpdate' )
 };
 
-function updateSubmit(event: any): void {
+function updateSubmit(): void {
   
-  const idModal: string = document.getElementById('idAdmUpdate')!.textContent!;
-  const inputModalName: HTMLInputElement = <HTMLInputElement>document.getElementById('nameAdmUpdate');
-  const inputModalApe: HTMLInputElement = <HTMLInputElement>document.getElementById('apeAdmUpdate');
-  const inputModalDni: HTMLInputElement = <HTMLInputElement>document.getElementById('dniAdmUpdate');
-
+  const idModal: string = ( document.getElementById( 'idAdmUpdate' ) as HTMLElement ).textContent!;
 
   administratives.forEach( item => {
-    if( item.id === idModal){
-      item.nombre = inputModalName.value
-      item.apellido = inputModalApe.value
-      item.dni = inputModalDni.value
+    if( item.id === idModal ){
+      item.nombre = ( inputsModifyModal.name as HTMLInputElement ).value;
+      item.apellido = ( inputsModifyModal.ape as HTMLInputElement ).value;
+      item.dni = ( inputsModifyModal.dni as HTMLInputElement ).value; 
     }
-  })
+  });
 
-  localStorage.setItem("administratives", JSON.stringify(administratives))
-  tbody.innerHTML = "";
-  init()
-
-}
+  localStorage.setItem( 'administratives', JSON.stringify( administratives ) ); 
+  tbody.innerHTML = '';
+  init();
+};
 
 function init() {
   administratives = handleLS( lsKey,[ ...administrativesMock ] );

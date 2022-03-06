@@ -1,15 +1,16 @@
+import { IInputsIds } from "../interfaces/iInputsIds.js";
 import { Cliente } from "../models/cliente.model.js";
 import { customersMock, prefixObj, totalDigits } from '../utils/data.js';
-import { deleteItem, getFormData, handleLS, nextId, printId } from '../utils/utils.js';
+import { deleteItem, getFormData, handleLS, nextId, printId, updateItem } from '../utils/utils.js';
 
 let customers: Cliente[] = [];
-const lsKey: string = 'customers'
+const lsKey: string = 'customers';
 const tbody = document.getElementById( 'tbodyCli' ) as HTMLElement;
 const btnFormCli = document.getElementById( 'btnFormCli' ) as HTMLElement;
 btnFormCli.addEventListener( 'click', sendForm );
 const idCli = document.getElementById( 'idCli' ) as HTMLFormElement;
-const btnDelete = document.getElementById( 'tbodyCli' ) as HTMLElement;
-btnDelete.addEventListener( 'click', ( e ) => { deleteItem( e, lsKey, tbody, init ) } )
+const btnUpdateSubmit: HTMLButtonElement = <HTMLButtonElement>document.getElementById( 'btnUpdateModalSubmit' );
+btnUpdateSubmit.addEventListener( 'click', updateSubmit );
 
 
 
@@ -18,7 +19,7 @@ const printIdPayload = {
   list: customers,
   prefix: prefixObj.customer,
   totalDigits: totalDigits
-}
+};
 
 function printCustomers(): void {
   customers.forEach( item => { buildTableItem( item ) });
@@ -35,28 +36,52 @@ function buildTableItem( item: any ){
     thId.appendChild( thIdText );
 
     const tdNomCli = document.createElement( 'td' );
+    tdNomCli.setAttribute('id', 'tdName');
     const tdNomCliText = document.createTextNode( item.nombre );
     tdNomCli.appendChild( tdNomCliText );
 
     const tdApeCli = document.createElement( 'td' );
+    tdApeCli.setAttribute('id', 'tdApe');
     const tdApeCliText = document.createTextNode( item.apellido );
     tdApeCli.appendChild( tdApeCliText );
 
     const tdDniCli = document.createElement( 'td' );
+    tdDniCli.setAttribute('id', 'tdDni');
     const tdDniCliText = document.createTextNode( item.dni );
     tdDniCli.appendChild( tdDniCliText );
 
     const tdDel = document.createElement( 'td' )
-    const tdBtnDel = document.createElement( 'button' )
+    const tdBtnDel = document.createElement( 'button' );
     tdBtnDel.setAttribute( 'class', 'btn btn-danger btn-sm' );
-    tdDel.appendChild(tdBtnDel)
+    tdBtnDel.setAttribute( 'id', 'btnDel' );
+    tdBtnDel.addEventListener( 'click', ( e ) => { deleteItem( e, lsKey, tbody, init )} );
+    tdDel.appendChild(tdBtnDel);
     const tdBtnDelText = document.createTextNode( 'Eliminar' );
     tdBtnDel.appendChild( tdBtnDelText );
   
     const tdMod = document.createElement( 'td' )
-    const tdBtnMod = document.createElement( 'button' )
+    const tdBtnMod = document.createElement( 'button' );
     tdBtnMod.setAttribute( 'class', 'btn btn-warning btn-sm' );
-    tdMod.appendChild(tdBtnMod)
+    tdBtnMod.setAttribute( 'id', 'btnMod' );
+    tdBtnMod.setAttribute('data-bs-toggle', 'modal');
+    tdBtnMod.setAttribute('data-bs-target', '#updateModal');
+    const rowIdElement: HTMLElement = <HTMLElement>document.getElementById( 'idUpdate' )
+    const inputs: IInputsIds[] = [
+      {
+        form: "tdName",
+        modal: "nameUpdate"
+      },
+      {
+        form: "tdApe",
+        modal: "apeUpdate"
+      },
+      {
+        form: "tdDni",
+        modal: "dniUpdate"
+      }
+    ]
+    tdBtnMod.addEventListener( 'click', ( e ) => { updateItem( e, rowIdElement, inputs)} );
+    tdMod.appendChild(tdBtnMod);
     const tdBtnModText = document.createTextNode( 'Modificar' );
     tdBtnMod.appendChild( tdBtnModText );
 
@@ -85,6 +110,29 @@ function addCustomer( formData: any ) {
   customers.push( newCustomer );
   localStorage.setItem( lsKey, JSON.stringify( customers ) );
   buildTableItem( newCustomer );
+};
+
+const inputsModifyModal = {
+  name: <HTMLInputElement>document.getElementById( 'nameUpdate' ),
+  ape: <HTMLInputElement>document.getElementById( 'apeUpdate' ),
+  dni: <HTMLInputElement>document.getElementById( 'dniUpdate' )
+};
+
+function updateSubmit(): void {
+  
+  const idModal: string = ( document.getElementById( 'idUpdate' ) as HTMLElement ).textContent!;
+
+  customers.forEach( item => {
+    if( item.id === idModal ){
+      item.nombre = ( inputsModifyModal.name as HTMLInputElement ).value;
+      item.apellido = ( inputsModifyModal.ape as HTMLInputElement ).value;
+      item.dni = ( inputsModifyModal.dni as HTMLInputElement ).value; 
+    }
+  });
+
+  localStorage.setItem( lsKey, JSON.stringify( customers ) ); 
+  tbody.innerHTML = '';
+  init();
 };
 
 function init() {

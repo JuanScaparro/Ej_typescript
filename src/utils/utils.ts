@@ -1,5 +1,8 @@
+import { IInputsIds } from "../interfaces/iInputsIds.js";
 import { Producto } from "../models/producto.model.js";
 
+
+// Valida y obtiene los valores de los campos imputs y select 
 export function getFormData(event: any): any  {
   event.preventDefault();
   const formRefId = event.target.parentElement.id;
@@ -39,6 +42,7 @@ function showError(): void{
   alert( 'Complete todos los campos de la venta' );
 };
 
+// Hace un descuento sobre el precio
 export function getDiscount( item: number ): number {
   const price = item
   const discount =  price *0.10
@@ -46,13 +50,14 @@ export function getDiscount( item: number ): number {
   return  Number(resultDisc.toFixed(2))
 };
 
+// Devuelve un resultado entre el precio y el descuento
 export function getDiscountPercent( item: number ): number {
   const price = item
   const discount = price - getDiscount(item) //price *0.10
   return Number(discount.toFixed(2))
 };
 
-
+// Crea los elementos Option 
 export function buildSelectOptions(list: any[], selectRef: HTMLSelectElement) {
   list.forEach(item => {
     const opt = document.createElement( 'option' );
@@ -69,7 +74,7 @@ export function buildSelectOptions(list: any[], selectRef: HTMLSelectElement) {
   
 };
 
-
+// Obtine Id de manera automatica
 export function getNewFullId(id:string, prefix: string, totalDigits: number) {               
   return id.length >= totalDigits 
       ? prefix + id
@@ -83,12 +88,14 @@ export function getNewIdNumber( prevId: string, prefix:string ): string{
 };
 
 export function nextId(listType: any[], prefixType: string, totalDigits: number): string {
+  console.log(listType)
   const prevId = listType[listType.length-1].id;
   const newIdNumber = getNewIdNumber( prevId , prefixType );
   const newFullId = getNewFullId( newIdNumber, prefixType, totalDigits );
   return newFullId;
 };
 
+// Maneja los datos del localStorage
 export function handleLS ( key: string, dataMock?: any[] ): any[] {
   let returnData: any[] = dataMock || []
   const resultData: string | null = localStorage.getItem( key );
@@ -100,38 +107,50 @@ export function handleLS ( key: string, dataMock?: any[] ): any[] {
   return returnData
 };
 
+// Imprime Id en el form 
 export function printId(payload: any ): void {
   const { idForm, list, prefix, totalDigits } = payload
   const isH2: boolean = idForm.hasChildNodes();
   if( isH2 ) {
-    idForm.getElementsByTagName( 'h2' )[0].innerHTML = nextId(list, prefix, totalDigits);
+    idForm.getElementsByTagName( 'h2' )[0].innerHTML = nextId( list, prefix, totalDigits );
   }else {
     const nodoH2 = document.createElement( 'h2' );
-    const h2Text = document.createTextNode( nextId(list, prefix, totalDigits) );
+    const h2Text = document.createTextNode( nextId( list, prefix, totalDigits ) );
     nodoH2.appendChild( h2Text );
     idForm.appendChild( nodoH2 );
   }
 };
 
+// Borra fila seleccionada, actualiza el localStorage y resetea la tabla
 export function deleteItem( event: any, key: string, tbody: HTMLElement, callback: any ): any {
   event.preventDefault();
   const itemId: string = event.target.parentElement.parentElement.id;
   deleteLS( key, itemId, tbody, callback );
 };
 
-
 function deleteLS( key: string, id: string, tbody: HTMLElement, callback: any ) {
-  let dataLS: any[] = JSON.parse(localStorage.getItem( key )!);
+  let dataLS: any[] = JSON.parse( localStorage.getItem( key )! );
   const dataLSFiltered = dataLS.filter( item => item.id !== id );
   let newDataLS = JSON.stringify( dataLSFiltered );
   localStorage.setItem( key, newDataLS );
   resetTable( tbody, callback );
 };
 
-
-
-
-function resetTable(tbody: HTMLElement, callback: any){
+function resetTable( tbody: HTMLElement, callback: any ){
   tbody.innerHTML = "";
   callback();
+};
+
+export function updateItem( event: any, rowIdElement: HTMLElement, inputsIds: IInputsIds[]): any {
+  event.preventDefault();
+  //
+  const row = event.target.parentElement.parentElement as HTMLElement;
+  const userId: string = row.id;
+  rowIdElement.innerHTML = userId;
+
+  inputsIds.forEach( ( input ) => {    
+    const formInput = ( row.querySelector( `#${input.form}` ) as HTMLInputElement ).textContent
+    const inputModal = <HTMLInputElement>document.getElementById( input.modal )
+    inputModal.value = formInput!
+  } )
 };

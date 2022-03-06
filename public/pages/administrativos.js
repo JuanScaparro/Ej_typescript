@@ -1,6 +1,6 @@
 import { Administrativo } from '../models/administrativo.model.js';
 import { administrativesMock, prefixObj, totalDigits } from '../utils/data.js';
-import { deleteItem, getFormData, handleLS, nextId, printId } from '../utils/utils.js';
+import { deleteItem, getFormData, handleLS, nextId, printId, updateItem } from '../utils/utils.js';
 let administratives = [];
 const lsKey = 'administratives';
 const tbody = document.getElementById("tbodyAdm");
@@ -55,7 +55,22 @@ function buildTableItem(item) {
     tdBtnMod.setAttribute('id', 'btnMod');
     tdBtnMod.setAttribute('data-bs-toggle', 'modal'); // lanza el modal
     tdBtnMod.setAttribute('data-bs-target', '#updateModal'); // Identifica el modal a lanzar
-    tdBtnMod.addEventListener('click', (e) => { updateItem(e, lsKey, tbody, init); });
+    const rowIdElement = document.getElementById('idAdmUpdate');
+    const inputs = [
+        {
+            form: "tdName",
+            modal: "nameAdmUpdate"
+        },
+        {
+            form: "tdApe",
+            modal: "apeAdmUpdate"
+        },
+        {
+            form: "tdDni",
+            modal: "dniAdmUpdate"
+        }
+    ];
+    tdBtnMod.addEventListener('click', (e) => { updateItem(e, rowIdElement, inputs); });
     tdMod.appendChild(tdBtnMod);
     const tdBtnModText = document.createTextNode('Modificar');
     tdBtnMod.appendChild(tdBtnModText);
@@ -83,41 +98,25 @@ function addAdmin(formData) {
     buildTableItem(newAdministrative);
 }
 ;
-function updateItem(event, key, tbody, callback) {
-    event.preventDefault();
-    // const itemId: string = event.target.parentElement.parentElement.id;
-    const row = event.target.parentElement.parentElement;
-    const userId = row.id;
-    const tdName = row.querySelector("#tdName").textContent;
-    const tdApe = row.querySelector("#tdApe").textContent;
-    const tdDni = row.querySelector("#tdDni").textContent;
-    //
-    const rowId = document.getElementById('idAdmUpdate');
-    const inputModalName = document.getElementById('nameAdmUpdate');
-    const inputModalApe = document.getElementById('apeAdmUpdate');
-    const inputModalDni = document.getElementById('dniAdmUpdate');
-    rowId.innerHTML = userId;
-    inputModalName.value = tdName;
-    inputModalApe.value = tdApe;
-    inputModalDni.value = tdDni;
-}
-;
-function updateSubmit(event) {
+const inputsModifyModal = {
+    name: document.getElementById('nameAdmUpdate'),
+    ape: document.getElementById('apeAdmUpdate'),
+    dni: document.getElementById('dniAdmUpdate')
+};
+function updateSubmit() {
     const idModal = document.getElementById('idAdmUpdate').textContent;
-    const inputModalName = document.getElementById('nameAdmUpdate');
-    const inputModalApe = document.getElementById('apeAdmUpdate');
-    const inputModalDni = document.getElementById('dniAdmUpdate');
     administratives.forEach(item => {
         if (item.id === idModal) {
-            item.nombre = inputModalName.value;
-            item.apellido = inputModalApe.value;
-            item.dni = inputModalDni.value;
+            item.nombre = inputsModifyModal.name.value;
+            item.apellido = inputsModifyModal.ape.value;
+            item.dni = inputsModifyModal.dni.value;
         }
     });
-    localStorage.setItem("administratives", JSON.stringify(administratives));
-    tbody.innerHTML = "";
+    localStorage.setItem('administratives', JSON.stringify(administratives));
+    tbody.innerHTML = '';
     init();
 }
+;
 function init() {
     administratives = handleLS(lsKey, [...administrativesMock]);
     printIdPayload.list = administratives;

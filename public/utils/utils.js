@@ -1,4 +1,5 @@
 import { Producto } from "../models/producto.model.js";
+// Valida y obtiene los valores de los campos imputs y select 
 export function getFormData(event) {
     event.preventDefault();
     const formRefId = event.target.parentElement.id;
@@ -31,6 +32,7 @@ function showError() {
     alert('Complete todos los campos de la venta');
 }
 ;
+// Hace un descuento sobre el precio
 export function getDiscount(item) {
     const price = item;
     const discount = price * 0.10;
@@ -38,12 +40,14 @@ export function getDiscount(item) {
     return Number(resultDisc.toFixed(2));
 }
 ;
+// Devuelve un resultado entre el precio y el descuento
 export function getDiscountPercent(item) {
     const price = item;
     const discount = price - getDiscount(item); //price *0.10
     return Number(discount.toFixed(2));
 }
 ;
+// Crea los elementos Option 
 export function buildSelectOptions(list, selectRef) {
     list.forEach(item => {
         const opt = document.createElement('option');
@@ -60,6 +64,7 @@ export function buildSelectOptions(list, selectRef) {
     });
 }
 ;
+// Obtine Id de manera automatica
 export function getNewFullId(id, prefix, totalDigits) {
     return id.length >= totalDigits
         ? prefix + id
@@ -73,12 +78,14 @@ export function getNewIdNumber(prevId, prefix) {
 }
 ;
 export function nextId(listType, prefixType, totalDigits) {
+    console.log(listType);
     const prevId = listType[listType.length - 1].id;
     const newIdNumber = getNewIdNumber(prevId, prefixType);
     const newFullId = getNewFullId(newIdNumber, prefixType, totalDigits);
     return newFullId;
 }
 ;
+// Maneja los datos del localStorage
 export function handleLS(key, dataMock) {
     let returnData = dataMock || [];
     const resultData = localStorage.getItem(key);
@@ -91,6 +98,7 @@ export function handleLS(key, dataMock) {
     return returnData;
 }
 ;
+// Imprime Id en el form 
 export function printId(payload) {
     const { idForm, list, prefix, totalDigits } = payload;
     const isH2 = idForm.hasChildNodes();
@@ -105,6 +113,7 @@ export function printId(payload) {
     }
 }
 ;
+// Borra fila seleccionada, actualiza el localStorage y resetea la tabla
 export function deleteItem(event, key, tbody, callback) {
     event.preventDefault();
     const itemId = event.target.parentElement.parentElement.id;
@@ -122,5 +131,18 @@ function deleteLS(key, id, tbody, callback) {
 function resetTable(tbody, callback) {
     tbody.innerHTML = "";
     callback();
+}
+;
+export function updateItem(event, rowIdElement, inputsIds) {
+    event.preventDefault();
+    //
+    const row = event.target.parentElement.parentElement;
+    const userId = row.id;
+    rowIdElement.innerHTML = userId;
+    inputsIds.forEach((input) => {
+        const formInput = row.querySelector(`#${input.form}`).textContent;
+        const inputModal = document.getElementById(input.modal);
+        inputModal.value = formInput;
+    });
 }
 ;
